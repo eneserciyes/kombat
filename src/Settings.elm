@@ -43,10 +43,12 @@ in your Game when the user clicks StartGame.
 
 -}
 type alias Settings =
-    {  budget : Int,
-       num_tennis_players: Int,
-       player1Name : String,
-       player2Name : String
+    {  budget : Int
+    , num_tennis_players: Int
+    , player1Name : String
+    , player2Name : String
+    , player1Colour : SimpleColour
+    , player2Colour : SimpleColour
     }
 
 
@@ -57,10 +59,12 @@ For simplicity's sake, every setting MUST have a default value.
 -}
 default : Settings
 default =
-    { budget = 100,
-      num_tennis_players = 10,
-      player1Name = "Alice",
-      player2Name = "Bob"
+    { budget = 100
+    , num_tennis_players = 10
+    , player1Name = "Alice"
+    , player2Name = "Bob"
+    , player1Colour = Red
+    , player2Colour = Blue
     }
 
 
@@ -74,6 +78,7 @@ type Msg
     = SetBudget Int
     | SetNumTennisPlayers Int
     | SetPlayerName Player String
+    | SetPlayerColour Player SimpleColour
 
 
 
@@ -96,6 +101,13 @@ update msg settings =
                     { settings | player1Name = name }
                 Player2 ->
                     { settings | player2Name = name }
+        SetPlayerColour player colour ->
+            case player of
+                Player1 ->
+                    { settings | player1Colour = colour }
+
+                Player2 ->
+                    { settings | player2Colour = colour }
 
 
 {-| STEP 5: Define a list of pickers for each setting you want to be able to change.
@@ -143,9 +155,46 @@ pickers settings =
         { label = "Player 2 Name"
         , value = settings.player2Name
         , onChange = SetPlayerName Player2
-        } 
-    
+        }
+    , pickChoiceButtons
+        { label = "Player 1 Colour"
+        , onSelect = SetPlayerColour Player1
+        , current = settings.player1Colour
+        , options = [ ( "Red", Red ), ( "Green", Green ), ( "Blue", Blue ) ]
+        }
+    , pickChoiceButtons
+        { label = "Player 2 Colour"
+        , onSelect = SetPlayerColour Player2
+        , current = settings.player2Colour
+        , options = [ ( "Red", Red ), ( "Green", Green ), ( "Blue", Blue ) ]
+        }
     ]
+
+--------------------------------------------------------------------------------
+-- SUPPORTING TYPES
+-- A few custom types I've defined for my settings, as I wanted to represent
+-- some of the choices as enums.
+--------------------------------------------------------------------------------
+
+type SimpleColour
+    = Red
+    | Green
+    | Blue
+
+
+{-| Convert a colour to a string
+-}
+colourToString : SimpleColour -> String
+colourToString colour =
+    case colour of
+        Red ->
+            "red"
+
+        Green ->
+            "green"
+
+        Blue ->
+            "blue"
 
 
 

@@ -21,7 +21,7 @@ import Html.Events exposing (..)
 import List exposing (..)
 import Settings exposing (..)
 import Array exposing (Array)
-
+import Random exposing (..)
 
 --------------------------------------------------------------------------------
 -- GAME MODEL
@@ -50,6 +50,7 @@ type alias Game =
     , player1_stats: PlayerStats
     , player2_stats: PlayerStats
     , turn : Player
+    , player_on_match: TennisPlayer
     }
 
 -- TennisPlayer type
@@ -67,6 +68,7 @@ type alias PlayerStats
         current_budget: Int
     }
 
+
 {-| Create the initial game data given the settings.
 -}
 init : Settings -> ( Game, Cmd Msg )
@@ -74,11 +76,13 @@ init settings =
     let
         initialGame =
             { settings = settings
+            , phase = SelectTennisPlayer
             , status = Playing
             , turn = Player1
             , table = Array.empty -- TODO: populate with players
             , player1_stats = { deck = Array.empty, score = 0, current_budget = settings.budget }
             , player2_stats = { deck = Array.empty, score = 0, current_budget = settings.budget }
+            , player_on_match = Nothing 
             }
     in
     ( initialGame, Cmd.none )
@@ -94,7 +98,7 @@ init settings =
 -}
 type Move
     = SelectTennisPlayer Player TennisPlayer
-    | PutPlayerOnTable Player TennisPlayer
+    | PutPlayerOnMatch Player TennisPlayer
 
 
 {-| Apply a move to a game state, returning a new game state.
@@ -117,7 +121,65 @@ applyMove move game =
                         playerStats = game.player2_stats
                     in { game | table=updatedTable, player2_stats = {playerStats | deck = newPlayerDeck, current_budget = playerStats.current_budget - tennis_player.price}, turn = Player1} 
 
+        PutPlayerOnMatch player tennis_player ->
+            case player of
+                Player1 ->
+                    let 
+                        newDeck = Array.filter (\p -> p.name /= tennis_player.name) game.player1_stats.deck
+                        playerStats = game.player1_stats
+                    in
+                        {game | player1_stats = {playerStats | deck = newDeck}, player_on_match = tennis_player, turn = Player2}
+                Player2 ->
+                    -- match is played here and winner is determined
+                    let
+                        matchResult = playMatch game.player_on_match tennis_player
+                        newDeck = Array.filter (\p -> p.name /= tennis_player.name) game.player2_stats.deck
+                        player1Stats = game.player1_stats
+                        player2Stats = game.player2_stats
+                        updatedPlayer2Stats = {player2Stats | deck = newDeck}
+                        updatedGame = {game | player2_stats = updatedPlayer2Stats, player_on_match = Nothing, turn = Player1} 
+                    in
+                        case matchResult of
+                            Player1 ->
+                                {updatedGame | player1_stats = {player1Stats | score = player1Stats.score + 1}}
+                            Player2 ->
+                                {updatedGame | player2_stats = {updatedPlayer2Stats | score = updatedPlayer2Stats.score + 1}}
 
+
+--------------------------------------------------------------------------------
+-- GAME HELPER FUNCTIONS
+-- Helper functions to implement the game logic.
+--------------------------------------------------------------------------------
+
+-- Plays the match and returns the winner
+playMatch: TennisPlayer -> TennisPlayer -> Player
+playMatch player1 player2 =
+    let
+        player1_win_prob = player1.strength / (player1.strength + player2.strength)
+        random_num_from_0_to_1 = Random.float 0 1
+    in
+        if random_num_from_0_to_1 < player1_win_prob then
+            Player1
+        else
+            Player2                  
+
+currentColour : Game -> Settings.SimpleColour
+currentColour game =
+    case game.turn of
+        Player1 ->
+            game.settings.player1Colour
+
+        Player2 ->
+            game.settings.player2Colour
+
+currentName : Game -> String
+currentName game =
+    case game.turn of
+        Player1 ->
+            game.settings.player1Name
+
+        Player2 ->
+            game.settings.player2Name
 
 --------------------------------------------------------------------------------
 -- INTERFACE LOGIC
@@ -136,8 +198,10 @@ applyMove move game =
 {-| An enumeration of all messages that can be sent from the interface to the game
 -}
 type Msg
-    = ClickedIncrement
-    | ClickedDecrement
+    = SelectedTennisPlayer TennisPlayer
+    | ChosenTennisPlayerForMatch TennisPlayer
+    | FinishSelection
+    | NoOp
 
 
 {-| A convenience function to pipe a command into a (Game, Cmd Msg) tuple.
@@ -153,15 +217,27 @@ a new game state as well as any additional commands to be run.
 update : Msg -> Game -> ( Game, Cmd Msg )
 update msg game =
     case msg of
-        ClickedIncrement ->
+        SelectedTennisPlayer tennis_player ->
+            let 
+                nextState = SelectTennisPlayer game.turn tennis_player
+                    |> applyMove game
+            in
+                nextState |> withCmd Cmd.none 
+        ChosenTennisPlayerForMatch tennis_player ->
+            let
+                nextState = PutPlayerOnMatch game.turn tennis_player
+                    |> applyMove game
+            in
+                nextState |> withCmd Cmd.none
+        FinishSelection ->
+            let
+                nextState = {game | phase = PlayingMatches}
+            in
+                nextState |> withCmd Cmd.none
+        NoOp ->
             game
-                |> applyMove Increment
                 |> withCmd Cmd.none
 
-        ClickedDecrement ->
-            game
-                |> applyMove Decrement
-                |> withCmd Cmd.none
 
 
 
@@ -179,9 +255,49 @@ can be sent from.
 view : Game -> Html Msg
 view game =
     div [ id "game-screen-container" ]
-        [ h1 [id "counter-value"] [ text (String.fromInt game.count) ]
-        , div [id "counter-buttons"]
-            [ button [ onClick ClickedDecrement ] [ text "-" ]
-            , button [ onClick ClickedIncrement ] [ text "+" ]
+        [ div [id "game-header"] [ viewStatus game]
+        , div [id "game-main"] [viewBoard game]
+        ]
+    
+-- Status
+
+viewStatus : Game -> Html Msg
+viewStatus ({ settings } as game) =
+    let
+        colour =
+            case game.status of
+                Complete outcome ->
+                    case outcome.winner of
+                        Player1 ->
+                            settings.player1Colour |> Settings.colourToString
+
+                        Player2 ->
+                            settings.player2Colour |> Settings.colourToString
+                Playing ->
+                    currentColour game |> Settings.colourToString
+        ( statusClass, statusText ) = 
+            case game.status of
+                Playing ->
+                    case game.phase of
+                        SelectingPlayers ->
+                            ( "status-playing", "Selecting Tennis Players" ++ currentName game ++ "'s turn" )
+                        PlayingMatches ->
+                            ( "status-playing", "Playing Matches" ++ currentName game ++ "'s turn" )
+                Complete outcome->
+                    ("status-won", outcome.name ++ " WINS!")
+    in
+    div [ id "game-status", class statusClass, class colour ]
+        [ div [ class ("game-status-text " ++ colour) ] [text statusText]
+        , div [ class "firework-container", classList [ ("show", statusClass == "status-won")]]
+            [ div [ class "firework" ] []
+            , div [ class "firework" ] []
+            , div [ class "firework" ] []
+            ]
+        , div 
+            [ class "flash"
+            , class statusClass
+            , classList [( "show", statusClass== "status-won")]
             ]
         ]
+    
+        

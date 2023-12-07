@@ -23,19 +23,16 @@ type Player
     = Player1
     | Player2
 
-
-{-| The game either ends up with a winner or as a draw.
--}
-type Outcome
-    = Winner Player
-    | Draw
-
-
+type alias Outcome 
+    = {
+        winner: Player,
+        name: String
+    }
 {-| A game is either in progress of complete.
 -}
 type Status
     = Playing
-    | Complete Outcome
+    | Complete Outcome -- name of the winner of the game
 
 -- Phase: Selecting players or playing matches
 type Phase
