@@ -20,7 +20,7 @@ import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import List exposing (..)
 import Settings exposing (..)
-
+import Array exposing (Array)
 
 
 --------------------------------------------------------------------------------
@@ -44,9 +44,26 @@ if you will use it a lot.
 -}
 type alias Game =
     { settings : Settings
-    , count : Int
+    , status: Status
+    , table: Array TennisPlayer
+    , player1_stats: PlayerStats
+    , player2_stats: PlayerStats
+    , turn : Player
     }
 
+-- TennisPlayer type
+type alias TennisPlayer
+    = {
+        name : String,
+        strength: Int
+    }
+
+type alias PlayerStats
+    = {
+        score: Int,
+        deck: Array TennisPlayer,
+        current_budget: Int
+    }
 
 {-| Create the initial game data given the settings.
 -}
@@ -55,7 +72,11 @@ init settings =
     let
         initialGame =
             { settings = settings
-            , count = settings.initialCount
+            , status = Playing
+            , turn = Player1
+            , table = Array.empty
+            , player1_stats = { deck = Array.empty, score = 0, current_budget = settings.budget }
+            , player2_stats = { deck = Array.empty, score = 0, current_budget = settings.budget }
             }
     in
     ( initialGame, Cmd.none )

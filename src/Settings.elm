@@ -43,7 +43,10 @@ in your Game when the user clicks StartGame.
 
 -}
 type alias Settings =
-    { initialCount : Int
+    {  budget : Int,
+       num_tennis_players: Int,
+       player1Name : String,
+       player2Name : String
     }
 
 
@@ -54,7 +57,10 @@ For simplicity's sake, every setting MUST have a default value.
 -}
 default : Settings
 default =
-    { initialCount = 0
+    { budget = 100,
+      num_tennis_players = 10,
+      player1Name = "Alice",
+      player2Name = "Bob"
     }
 
 
@@ -65,7 +71,10 @@ setting). This is typically the same type as your setting.
 
 -}
 type Msg
-    = SetInitialCount Int
+    = SetBudget Int
+    | SetNumTennisPlayers Int
+    | SetPlayerName Player String
+
 
 
 {-| STEP 4: Define explicitly what happens to your settings when a message is received.
@@ -77,8 +86,16 @@ with the new payload. You can see the implementations below for this.
 update : Msg -> Settings -> Settings
 update msg settings =
     case msg of
-        SetInitialCount count ->
-            { settings | initialCount = count }
+        SetBudget budget ->
+            { settings | budget = budget }
+        SetNumTennisPlayers num_tennis_players ->
+            { settings | num_tennis_players = num_tennis_players }
+        SetPlayerName player name ->
+            case player of
+                Player1 ->
+                    { settings | player1Name = name }
+                Player2 ->
+                    { settings | player2Name = name }
 
 
 {-| STEP 5: Define a list of pickers for each setting you want to be able to change.
@@ -104,12 +121,30 @@ You can customise this further if you so wish (see the HELPER FUNCTIONS section 
 pickers : Settings -> List SettingPickerItem
 pickers settings =
     [ inputIntRange
-        { label = "Initial Count"
-        , value = settings.initialCount
-        , min = 0
+        { label = "Budget"
+        , value = settings.budget
+        , min = 50
         , max = 100
-        , onChange = SetInitialCount
+        , onChange = SetBudget
         }
+    , inputIntRange
+        { label = "Number of Tennis Players"
+        , value = settings.num_tennis_players
+        , min = 3
+        , max = 15
+        , onChange = SetNumTennisPlayers
+        }
+    , inputString
+        { label = "Player 1 Name"
+        , value = settings.player1Name
+        , onChange = SetPlayerName Player1
+        }
+    , inputString
+        { label = "Player 2 Name"
+        , value = settings.player2Name
+        , onChange = SetPlayerName Player2
+        } 
+    
     ]
 
 
