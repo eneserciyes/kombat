@@ -37,6 +37,10 @@ type Status
     = Playing
     | Complete Outcome
 
+-- Phase: Selecting players or playing matches
+type Phase
+    = SelectingPlayers
+    | PlayingMatches
 
 --------------------------------------------------------------------------------
 -- CONVENIENCE FUNCTIONS

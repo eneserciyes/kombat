@@ -45,6 +45,7 @@ if you will use it a lot.
 type alias Game =
     { settings : Settings
     , status: Status
+    , phase: Phase
     , table: Array TennisPlayer
     , player1_stats: PlayerStats
     , player2_stats: PlayerStats
@@ -55,7 +56,8 @@ type alias Game =
 type alias TennisPlayer
     = {
         name : String,
-        strength: Int
+        strength: Int,
+        price: Int
     }
 
 type alias PlayerStats
@@ -74,7 +76,7 @@ init settings =
             { settings = settings
             , status = Playing
             , turn = Player1
-            , table = Array.empty
+            , table = Array.empty -- TODO: populate with players
             , player1_stats = { deck = Array.empty, score = 0, current_budget = settings.budget }
             , player2_stats = { deck = Array.empty, score = 0, current_budget = settings.budget }
             }
@@ -91,8 +93,8 @@ init settings =
 {-| The possible moves that a player can make.
 -}
 type Move
-    = Increment
-    | Decrement
+    = SelectTennisPlayer Player TennisPlayer
+    | PutPlayerOnTable Player TennisPlayer
 
 
 {-| Apply a move to a game state, returning a new game state.
@@ -100,11 +102,20 @@ type Move
 applyMove : Move -> Game -> Game
 applyMove move game =
     case move of
-        Increment ->
-            { game | count = game.count + 1 }
-
-        Decrement ->
-            { game | count = game.count - 1 }
+        SelectTennisPlayer player tennis_player ->
+            case player of 
+                Player1 ->
+                    let 
+                        newPlayerDeck = Array.push tennis_player game.player1_stats.deck 
+                        updatedTable = Array.filter (\p -> p.name /= tennis_player.name) game.table
+                        playerStats = game.player1_stats
+                    in { game | table=updatedTable, player1_stats = {playerStats | deck = newPlayerDeck, current_budget = playerStats.current_budget - tennis_player.price}, turn = Player2}
+                Player2 -> 
+                    let 
+                        newPlayerDeck = Array.push tennis_player game.player2_stats.deck 
+                        updatedTable = Array.filter (\p -> p.name /= tennis_player.name) game.table
+                        playerStats = game.player2_stats
+                    in { game | table=updatedTable, player2_stats = {playerStats | deck = newPlayerDeck, current_budget = playerStats.current_budget - tennis_player.price}, turn = Player1} 
 
 
 
