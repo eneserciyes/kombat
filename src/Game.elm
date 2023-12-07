@@ -297,7 +297,19 @@ viewStatus ({ settings } as game) =
             [ class "flash"
             , class statusClass
             , classList [( "show", statusClass== "status-won")]
-            ]
+            ] []
         ]
     
-        
+viewBoard : Game -> Html Msg
+viewBoard game =
+    case game.phase of
+        SelectingPlayers ->
+            viewSelectingPlayers game
+        PlayingMatches ->
+            viewPlayingMatches game
+
+viewSelectingPlayers : Game -> Html Msg
+viewSelectingPlayers game = div [] []
+
+viewPlayingMatches : Game -> Html Msg
+viewPlayingMatches game = div [] []
