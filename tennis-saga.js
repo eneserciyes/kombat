@@ -256,6 +256,38 @@ async function playMatches(){
             // hide court cards
             courtCard1.style.display = 'none';
             courtCard2.style.display = 'none';
+
+            // update round
+            round = round+1;
+            if (round > max_rounds){
+                finished = true;
+                console.log("Game over");
+                if (player1.deck.length > 0){
+                    player1.score = player1.score + player1.deck.length;
+                    player1.deck = [];
+                }else if (player2.deck.length > 0){
+                    player2.score = player2.score + player2.deck.length;
+                    player2.deck = [];
+                }
+                updateScores(player1, player2);
+                // hide court
+                let court = document.querySelector('#court');
+                court.style.display = 'none';
+
+                // display winner
+                let courtResult = document.querySelector('#court-result');
+                let winnerText = document.querySelector('#court-result #winner');
+                courtResult.style.display = 'block';
+
+                if (player1.score > player2.score){
+                    winnerText.innerHTML = `${player1.name} wins!`
+                }else if (player1.score < player2.score){
+                    winnerText.innerHTML = `${player2.name} wins!`
+                }else{
+                    winnerText.innerHTML = "It's a tie!";
+                }
+            }
+
             playButton.removeEventListener('click', playButtonEventHandler);
         }
         playButton.addEventListener('click', playButtonEventHandler);
