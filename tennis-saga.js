@@ -231,11 +231,12 @@ async function playMatches(){
     let playButton = document.querySelector('#play-button');
 
     while (!finished){
+        updateTurn(player1);
         let cardPlayer1 = await chooseCardForMatch(player1);
         courtCard1.innerHTML = cardPlayer1.innerHTML;
         courtCard1.style.display = 'block';
 
-
+        updateTurn(player2);
         let cardPlayer2 = await chooseCardForMatch(player2);
         courtCard2.innerHTML = cardPlayer2.innerHTML;
         courtCard2.style.display = 'block';
@@ -269,10 +270,15 @@ async function playMatches(){
                     player2.score = player2.score + player2.deck.length;
                     player2.deck = [];
                 }
+                updatePlayerDecks(player1, player2);
                 updateScores(player1, player2);
                 // hide court
                 let court = document.querySelector('#court');
+                let courtText = document.querySelector('#court-text');
+                let playButton = document.querySelector('#play-button');
                 court.style.display = 'none';
+                playButton.style.display = 'none';
+                courtText.style.display = 'none';
 
                 // display winner
                 let courtResult = document.querySelector('#court-result');
@@ -286,6 +292,8 @@ async function playMatches(){
                 }else{
                     winnerText.innerHTML = "It's a tie!";
                 }
+            }else{
+                updateRound(round, max_rounds);
             }
 
             playButton.removeEventListener('click', playButtonEventHandler);
@@ -361,8 +369,12 @@ function hideSelection(){
 
 function displayCourt(){
     let court = document.querySelector('#court');
+    let playButton = document.querySelector('#play-button');
     let scores = document.querySelectorAll('#score');
-    court.style.display = 'block';
+    let courtText = document.querySelector('#court-text');
+    court.style.display = 'flex';
+    playButton.style.display = 'block';
+    courtText.style.display = 'block';
     scores.forEach(score => {
         score.style.display = 'block';
     });
