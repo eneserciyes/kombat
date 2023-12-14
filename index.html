@@ -36,11 +36,20 @@
         }
 
         #middle-cards {
-            flex: 2;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+            padding-top: 5%;
+        }
+
+        #middle-cards #selectable-cards {
             display: flex;
             justify-content: center;
             align-items: flex-start;
-            padding-top: 5%;
+            margin-bottom: 20px;
         }
         #middle-cards .card {
             margin-right: 20px;
@@ -100,6 +109,12 @@
             margin-bottom: 20px;
             height: auto;
         }
+        #player1-cards .card{
+            background-color: #ffc9c9;
+        }
+        #player2-cards .card{
+            background-color: #c9e2ff;
+        }
     </style>
 </head>
 <body>        
@@ -107,8 +122,9 @@
     <header>
         <div id="player1-info">
             <div class="text-info">
-                <p id="name">Name</p>
+                <h3 id="name">Name</h3>
                 <p id="budget">Budget: Budget</p>
+                <p id="score" style="display: none;">Score: Score</p>
             </div>
         </div>
         <div id="game-info">
@@ -118,8 +134,9 @@
         </div>
         <div id="player2-info">
             <div class="text-info">
-                <p id="name">Name</p>
+                <h3 id="name">Name</h3>
                 <p id="budget">Budget: Budget</p>
+                <p id="score" style="display: none;">Score: Score</p>
             </div>
         </div>
 
@@ -127,24 +144,40 @@
 
     <section id="game-board">
         <div id="deck-container">
-            <p>Player 1's Deck</p>
+            <p id="p1-deck-name">Player 1's Deck</p>
             <div id="player1-cards">
                 <!-- Player 1's cards will go here -->
             </div>
         </div>
 
         <div id="middle-cards">
-            <div class="card" id="first-card">
-                <!-- <img src="/path/to/tennis-player-image.jpg" alt="Tennis Player"> -->
-                <p>Strength: 10</p>
+            <div id="selectable-cards">
+                <div class="card" id="first-card">
+                    <!-- <img src="/path/to/tennis-player-image.jpg" alt="Tennis Player"> -->
+                    <p>Strength: 10</p>
+                </div>
+                <div class="card" id="second-card">
+                    <!-- <img src="/path/to/tennis-player-image.jpg" alt="Tennis Player"> -->
+                    <p>Strength: 10</p>
+                </div>
             </div>
-            <div class="card" id="second-card">
-                <!-- <img src="/path/to/tennis-player-image.jpg" alt="Tennis Player"> -->
-                <p>Strength: 10</p>
+            <button id="pass-button">Pass</button>
+            <p id="selection-alert"></p>
+
+            <div id="court" style="display:none">
+                <h3>Court</h3>
+                <div class="card" id="court-card-1" style="display:none">
+                    <p>Strength: 10</p>
+                </div>
+                <div class="card" id="court-card-2" style="display:none">
+                    <p>Strength: 10</p>
+                </div>
+                <button id="play-button">Play</button>
             </div>
+
         </div>
         <div id="deck-container">
-            <p>Player 2's Deck</p>
+            <p id="p2-deck-name">Player 2's Deck</p>
             <div id="player2-cards">
                 <!-- Player 2's cards will go here -->
             </div>
