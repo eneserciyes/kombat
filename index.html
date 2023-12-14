@@ -2,10 +2,154 @@
 <html>
 <head>
     <title>Tennis Saga Game</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            overflow: hidden; /* prevent the body from scrolling */
+        }
+        .card {
+            width: 120px;
+            height: 180px;
+            border: 1px solid #000;
+            border-radius: 15px;
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
+            position: relative;
+            background-color: #fff;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+        .card:hover {
+            transform: scale(1.05);
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* .card img {
+            width: 100%;
+            height: 70%;
+        } */
+
+        .card p {
+            /* position: absolute;
+            bottom: 10px; */
+            width: 100%;
+        }
+
+        #middle-cards {
+            flex: 2;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding-top: 5%;
+        }
+        #middle-cards .card {
+            margin-right: 20px;
+        }
+        #middle-cards .card:last-child {
+            margin-right: 0;
+        }
+
+        #game-board {
+            display: flex;
+            justify-content: space-between;
+            height: 100vh; /* take up all the vertical space in the viewport */
+            border-top: 1px solid #000
+        }
+
+        #game-board > div {
+            border-right: 1px solid #000; /* change to your preferred color and thickness */
+        }
+
+        #game-board > div:last-child {
+            border-right: none;
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        #player1-info, #player2-info{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #deck-container{
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center; 
+        }
+
+        #player1-cards, #player2-cards {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+            align-items: center;
+            padding-top: 2%;
+            width: 100%;
+            overflow: auto; /* add a scrollbar if the content overflows */
+        }
+        #player1-cards .card, #player2-cards .card {
+            width: 80%; /* take up all the horizontal space in the parent div */
+            margin-bottom: 20px;
+            height: auto;
+        }
+    </style>
 </head>
-<body>
-    <button id="first-card">First Number</button>
-    <button id="second-card">Second Number</button>
+<body>        
+    <h1>Tennis Saga Game</h1>
+    <header>
+        <div id="player1-info">
+            <div class="text-info">
+                <p id="name">Name</p>
+                <p id="budget">Budget: Budget</p>
+            </div>
+        </div>
+        <div id="game-info">
+            <p id="phase-info">Card Selection</p>
+            <p id="round-info">Round: #1/10</p>
+            <p id="turn-info">Player 1's turn</p>
+        </div>
+        <div id="player2-info">
+            <div class="text-info">
+                <p id="name">Name</p>
+                <p id="budget">Budget: Budget</p>
+            </div>
+        </div>
+
+    </header>
+
+    <section id="game-board">
+        <div id="deck-container">
+            <p>Player 1's Deck</p>
+            <div id="player1-cards">
+                <!-- Player 1's cards will go here -->
+            </div>
+        </div>
+
+        <div id="middle-cards">
+            <div class="card" id="first-card">
+                <!-- <img src="/path/to/tennis-player-image.jpg" alt="Tennis Player"> -->
+                <p>Strength: 10</p>
+            </div>
+            <div class="card" id="second-card">
+                <!-- <img src="/path/to/tennis-player-image.jpg" alt="Tennis Player"> -->
+                <p>Strength: 10</p>
+            </div>
+        </div>
+        <div id="deck-container">
+            <p>Player 2's Deck</p>
+            <div id="player2-cards">
+                <!-- Player 2's cards will go here -->
+            </div>
+        </div>
+    </section>
 
     <script src="tennis-saga.js"></script>
 </body>
