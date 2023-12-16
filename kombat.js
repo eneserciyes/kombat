@@ -411,8 +411,8 @@ let deck2_pname = document.querySelector('#p2-deck-name');
 
 p1name.innerHTML = player1.name;
 p2name.innerHTML = player2.name;
-deck1_pname.innerHTML = `${player1.name}'s bench`;
-deck2_pname.innerHTML = `${player2.name}'s bench`;
+deck1_pname.innerHTML = `${player1.name}'s deck`;
+deck2_pname.innerHTML = `${player2.name}'s deck`;
 
 if (phase==='selection'){
     choose_cards();

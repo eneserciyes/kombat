@@ -1,0 +1,359 @@
+/* Add your CSS styles here */
+@font-face {
+    font-family: 'MK';
+    src: url('fonts/mortal_kombat/mk2.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Memento';
+    src: url('fonts/Memento/Memento.ttf') format('truetype');
+}
+
+/* General */
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Memento", Arial, Helvetica, system-ui, sans-serif;
+    overflow: hidden;
+}
+
+body {
+    background-image: url('imgs/background.jpg');
+    background-size: cover;
+    backdrop-filter: blur(5px);
+    background-position-y: -10rem;
+    color: #D8D8d8;
+}
+
+button {
+    background: #d1d5db;
+    font-family: inherit;
+    font-size: 10pt;
+    color: #111827;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: none;
+    border-bottom: 2px solid #9ca3af;
+    margin-top: 2px;
+    cursor: pointer;
+}
+
+button:hover {
+    border-bottom: 4px solid #9ca3af;
+    margin-top: 0px;
+}
+
+button:active {
+    border-bottom: 0px;
+    margin-top: 4px;
+}
+
+button.selected {
+    border-bottom: 0px;
+    margin-top: 4px;
+    background: #6b7280;
+    color: white;
+}
+
+/* Title */
+
+#title-heading {
+    font-size: 50px;
+    margin: 0;
+    padding: 0;
+    color: #f5f5f5;
+    /* Light text color */
+    text-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    background-color: #000;
+    padding: 10px;
+    box-sizing: border-box;
+    animation: fire-color 3s infinite;
+    font-family: "MK";
+}
+
+/* Game board */
+
+#game-board {
+    display: flex;
+    justify-content: space-between;
+    height: 100vh;
+    /* take up all the vertical space in the viewport */
+    border-top: 2px solid #111110
+}
+
+#game-board>div {
+    border-right: 2px solid #111110;
+    /* change to your preferred color and thickness */
+}
+
+#game-board>div:last-child {
+    border-right: none;
+}
+
+/* Game header */
+header {
+    display: flex;
+    justify-content: space-between;
+}
+
+#game-info{
+    display: block;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+#player1-info,
+#player2-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+#player1-info{
+    padding-left: 1rem;
+}
+#player2-info{
+    padding-right: 1rem;
+}
+
+.budget{
+    display: flex;
+    align-items: center;
+    height: 20%;
+}
+.budget img{
+    margin-right: 0.2rem;
+    height: 50%;
+}
+
+/* Cards */
+.card {
+    /* Display */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 12rem;
+    min-width: 8rem;
+    border-radius: 10px;
+    padding: 2px;
+    text-align: center;
+    position: relative;
+    /* Background */
+    background: #141414;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* Box */
+    box-sizing: border-box;
+    box-shadow:
+        inset 0px 0em 10px 5px rgba(0, 0, 0, 0.5),
+        inset 0px -2em 25px 10px rgba(0, 0, 0, 0.5);
+}
+
+.card-wrapper {
+    padding: 1rem;
+    position: relative;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    padding: 3px;
+    border-radius: 10px;
+}
+
+.card-wrapper:hover{
+    transform: scale(1.05);
+}
+
+.silver {
+    background: linear-gradient(45deg,
+            #999 5%,
+            #fff 10%,
+            #ccc 30%,
+            #ddd 50%,
+            #ccc 70%,
+            #fff 80%,
+            #999 95%);
+}
+
+.gold {
+    background: linear-gradient(45deg, #d4af37 5%, #debc5b 10%, #e7c97c 30%, #efd69d 50%, #e7c97c 70%, #debc5b 80%, #d4af37 95%);
+}
+
+.card img {
+    width: 100%;
+    height: auto;
+}
+
+.card .card-info{
+    width: 100%;
+    height: 20%;
+}
+
+.card .card-info h4, h3{
+    margin-block-start: 0.4em;
+    margin-block-end: 0.5em;
+}
+
+/* Card selection arena */
+
+#selection-arena {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+    /* padding-top: 1%; */
+}
+
+#selection-arena #selectable-cards {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+#selection-arena .card-wrapper {
+    margin-right: 20px;
+}
+
+#selection-arena .card-wrapper:last-child {
+    margin-right: 0;
+}
+
+/* Card playing arena */
+#selection-arena #court {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+/* Decks */
+.deck-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.deck-container h4{
+    box-sizing: border-box;
+    text-shadow: #000 0px 0px 10px;
+}
+
+#player1-cards,
+#player2-cards {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 2%;
+    width: 100%;
+    overflow: auto;
+    /* add a scrollbar if the content overflows */
+}
+
+#player1-cards .card,
+#player2-cards .card {
+    width: 80%;
+    /* take up all the horizontal space in the parent div */
+    margin-bottom: 20px;
+    height: auto;
+}
+
+
+/* Animations */
+
+@keyframes flicker {
+
+    /* Initial state of animation */
+    0%,
+    /* Final state of animation */
+    100% {
+        text-shadow:
+            0 -1px 3px #fff,
+            /* Innermost layer - intense heat (white) */
+            0 -2px 6px #FF3,
+            /* Second layer - core of flame (yellow) */
+            0 -6px 12px #F90,
+            /* Middle layer - body of flame (orange) */
+            0 -10px 20px #C33;
+        /* Outermost layer - edges of flame (red) */
+    }
+
+    /* Middle state of animation */
+    50% {
+        text-shadow:
+            0 -2px 6px #fff,
+            /* Innermost layer - intense heat (white) */
+            0 -4px 12px #FF3,
+            /* Second layer - core of flame (yellow) */
+            0 -8px 16px #F90,
+            /* Middle layer - body of flame (orange) */
+            0 -12px 24px #C33;
+        /* Outermost layer - edges of flame (red) */
+    }
+}
+
+@keyframes fire-color {
+    0% {
+        color: #801100;
+    }
+
+    10% {
+        color: #b62203;
+    }
+
+    20% {
+        color: #d73502;
+    }
+
+    30% {
+        color: #fc6400;
+    }
+
+    40% {
+        color: #ff7500;
+    }
+
+    50% {
+        color: #fac000;
+    }
+
+    60% {
+        color: #ffffff;
+    }
+
+    70% {
+        color: #b9e8ea;
+    }
+
+    80% {
+        color: #86d6d8;
+    }
+
+    90% {
+        color: #3fd0d4;
+    }
+
+    100% {
+        color: #20c3d0;
+    }
+}
+
+@keyframes gradient {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
