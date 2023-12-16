@@ -4,8 +4,11 @@
     <title>Tennis Saga Game</title>
     <link rel="stylesheet" type="text/css" href="kombat.css">
 </head>
-<body>        
-    <h1 id="title-heading">KOMBAT</h1>
+<body> 
+    <div id="title-heading-container">
+        <h1 id="title-heading">KOMBAT</h1>
+    </div>      
+    
     <header>
         <div id="player1-info">
             <h3 id="name">Name</h3>
@@ -38,52 +41,64 @@
                 <!-- Player 1's cards will go here -->
             </div>
         </div>
+        <div id="middle-column">
+            <div id="selection-arena">
+                <h4>Selection Arena</h4>
+                <div class="selectable-cards">
+                    <div class="card-wrapper silver">
+                    <div class="card" id="first-card" style="background-image: url('imgs/characters/subzero.png'); ">
+                        <div class="card-info">
+                            <h5>subzero</h5>
+                            <h4>8</h4>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="card-wrapper gold">
+                    <div class="card" id="second-card" style="background-image: url('imgs/characters/kotal-kahn.png');">
+                        <div class="card-info">
+                            <h5>kotal kahn</h5>
+                            <h4>7</h4>
+                        </div>
+                    </div>
+                    </div> 
+                </div>
+                <p id="selection-alert" style="display:none"></p>
 
-        <div id="selection-arena">
-            <h4>Selection Arena</h4>
-            <div id="selectable-cards">
-                <div class="card-wrapper silver">
-                <div class="card" id="first-card" style="background-image: url('imgs/characters/subzero.png'); ">
-                    <!-- <img src="/path/to/tennis-player-image.jpg" alt="Tennis Player"> -->
-                    <!-- <img src="imgs/subzero.png"/> -->
-                    <div class="card-info">
-                        <h4>subzero</h4>
-                        <h3>8</h3>
+                <h3 id="court-text" style="display:none">Court</h3>
+                <div id="court" style="display:none">
+                    <div class="card" id="court-card-1" style="display:none">
+                        
+                        <p>Strength: 10</p>
+                    </div>
+                    <div class="card" id="court-card-2" style="display:none">
+                        <p>Strength: 10</p>
                     </div>
                 </div>
+                <button id="play-button" style="display:none">Play</button>
+
+                <div id="court-result" style="display:none">
+                    <h3>Result</h3>
+                    <p>Game Over!</p>
+                    <p id="winner"> {} wins!</p>
                 </div>
-                <div class="card-wrapper gold">
-                <div class="card" id="second-card" style="background-image: url('imgs/characters/kotal-kahn.png');">
-                    <!-- <img src="/path/to/tennis-player-image.jpg" alt="Tennis Player"> -->
-                    <div class="card-info">
-                        <h4>kotal kahn</h4>
-                        <h3>7</h3>
+            </div>
+            <div id="all-fighters">
+                <h4>All Fighters</h4>
+                <div class="selectable-cards">
+                    <div class="card-wrapper silver">
+                    <div class="card" id="first-card" style="background-image: url('imgs/characters/subzero.png'); ">
+                        <div class="card-info">
+                            <h5>subzero</h5>
+                            <h4>8</h4>
+                        </div>
+                    </div>
                     </div>
                 </div>
-                </div> 
-            </div>
-            <button id="pass-button">Pass</button>
-            <p id="selection-alert"></p>
-
-            <h3 id="court-text" style="display:none">Court</h3>
-            <div id="court" style="display:none">
-                <div class="card" id="court-card-1" style="display:none">
-                    
-                    <p>Strength: 10</p>
-                </div>
-                <!-- <h3 id="versus" style="display:none">v.</h3> -->
-                <div class="card" id="court-card-2" style="display:none">
-                    <p>Strength: 10</p>
-                </div>
-            </div>
-            <button id="play-button" style="display:none">Play</button>
-
-            <div id="court-result" style="display:none">
-                <h3>Result</h3>
-                <p>Game Over!</p>
-                <p id="winner"> {} wins!</p>
             </div>
         </div>
+        
+        
+        
         <div class="deck-container">
             <h4 id="p2-deck-name">Player 2's Deck</h4>
             <div id="player2-cards">

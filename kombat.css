@@ -16,15 +16,20 @@ body {
     margin: 0;
     padding: 0;
     font-family: "Memento", Arial, Helvetica, system-ui, sans-serif;
-    overflow: hidden;
+
 }
 
 body {
     background-image: url('imgs/background.jpg');
     background-size: cover;
+    background-repeat: no-repeat;
     backdrop-filter: blur(5px);
-    background-position-y: -10rem;
+    /* background-position-y: -10rem; */
     color: #D8D8d8;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    /* overflow: hidden; */
 }
 
 button {
@@ -59,6 +64,10 @@ button.selected {
 
 /* Title */
 
+#title-heading-container{
+    flex: 1;
+}
+
 #title-heading {
     font-size: 50px;
     margin: 0;
@@ -77,9 +86,9 @@ button.selected {
 /* Game board */
 
 #game-board {
+    flex: 1;
     display: flex;
     justify-content: space-between;
-    height: 100vh;
     /* take up all the vertical space in the viewport */
     border-top: 2px solid #111110
 }
@@ -95,8 +104,19 @@ button.selected {
 
 /* Game header */
 header {
+    flex: 1;
     display: flex;
     justify-content: space-between;
+}
+
+header h1,
+header h2,
+header h3,
+header h4,
+header p {
+    /* your styles here */
+    margin-block-start: 0.3em;
+    margin-block-end: 0.3em;
 }
 
 #game-info{
@@ -135,8 +155,8 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    min-height: 12rem;
-    min-width: 8rem;
+    min-height: 9rem;
+    min-width: 6rem;
     border-radius: 10px;
     padding: 2px;
     text-align: center;
@@ -185,14 +205,24 @@ header {
     height: auto;
 }
 
-.card .card-info{
+.card-info{
     width: 100%;
     height: 20%;
 }
 
-.card .card-info h4, h3{
+.card-info > h5, .card-info > h4{
     margin-block-start: 0.4em;
     margin-block-end: 0.5em;
+}
+
+/* Middle column */
+#middle-column{
+    flex:2;
+    display:flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /* flex-wrap: wrap; */
+    align-items: center;
 }
 
 /* Card selection arena */
@@ -202,12 +232,13 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    flex-wrap: wrap;
+    /* flex-wrap: wrap; */
+    width: 100%;
     align-items: center;
-    /* padding-top: 1%; */
+    border-bottom: 2px solid #111110;
 }
 
-#selection-arena #selectable-cards {
+.selectable-cards {
     display: flex;
     justify-content: center;
     align-items: flex-start;
@@ -228,6 +259,18 @@ header {
     justify-content: center;
     align-items: flex-start;
     margin-bottom: 20px;
+}
+
+/* All cards */
+#all-fighters {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+    width: 100%;
+    /* padding-top: 1%; */
 }
 
 /* Decks */
