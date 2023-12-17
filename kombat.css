@@ -64,9 +64,9 @@ button.selected {
 
 /* Title */
 
-#title-heading-container{
+/* #title-heading-container{
     flex: 1;
-}
+} */
 
 #title-heading {
     font-size: 50px;
@@ -104,7 +104,6 @@ button.selected {
 
 /* Game header */
 header {
-    flex: 1;
     display: flex;
     justify-content: space-between;
 }
@@ -318,25 +317,15 @@ header p {
 #player1-cards,
 #player2-cards {
     flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-items: center;
-    padding-top: 2%;
-    width: 100%;
+    text-align: center;
     overflow: auto;
-    /* add a scrollbar if the content overflows */
 }
 
-#player1-cards .card,
-#player2-cards .card {
-    width: 80%;
-    /* take up all the horizontal space in the parent div */
-    margin-bottom: 20px;
-    height: auto;
+#player1-cards > .card-wrapper,
+#player2-cards > .card-wrapper {
+    display: inline-block;
+    margin: 10px;
 }
-
 
 /* Animations */
 
