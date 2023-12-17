@@ -29,7 +29,7 @@ body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    /* overflow: hidden; */
+    overflow: hidden;
 }
 
 button {
@@ -181,7 +181,7 @@ header p {
     border-radius: 10px;
 }
 
-.card-wrapper:hover{
+.selectable-cards .card-wrapper:hover{
     transform: scale(1.05);
 }
 
@@ -217,11 +217,10 @@ header p {
 
 /* Middle column */
 #middle-column{
-    flex:2;
+    width: 50%;
     display:flex;
     flex-direction: column;
     justify-content: flex-start;
-    /* flex-wrap: wrap; */
     align-items: center;
 }
 
@@ -232,24 +231,23 @@ header p {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    /* flex-wrap: wrap; */
     width: 100%;
     align-items: center;
     border-bottom: 2px solid #111110;
 }
 
-.selectable-cards {
+.selectable-cards{
     display: flex;
     justify-content: center;
     align-items: flex-start;
     margin-bottom: 20px;
 }
 
-#selection-arena .card-wrapper {
+.card-wrapper {
     margin-right: 20px;
 }
 
-#selection-arena .card-wrapper:last-child {
+.card-wrapper:last-child {
     margin-right: 0;
 }
 
@@ -270,7 +268,37 @@ header p {
     flex-wrap: wrap;
     align-items: center;
     width: 100%;
-    /* padding-top: 1%; */
+}
+
+.all-cards {
+    display: flex;
+    /* justify-content: center; */
+    align-items: flex-start;
+    margin-bottom: 20px;
+    width: 90%;
+    overflow-y: hidden;
+    overflow-x: auto;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    padding-bottom: 0.5rem;
+
+    &::-webkit-scrollbar-button {
+        display: none;
+    };
+
+    /* This will change the background color of the scrollbar track */
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+    };
+
+    /* This will change the color of the scrollbar thumb */
+    &::-webkit-scrollbar-thumb {
+        background-color: #888;
+    };
+
+    &::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    };
 }
 
 /* Decks */
