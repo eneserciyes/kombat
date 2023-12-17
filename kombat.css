@@ -269,17 +269,29 @@ header p {
     width: 100%;
 }
 
-.all-cards {
+/* Decks */
+.deck-container {
+    flex: 1;
     display: flex;
-    /* justify-content: center; */
-    align-items: flex-start;
-    margin-bottom: 20px;
-    width: 90%;
-    overflow-y: hidden;
-    overflow-x: auto;
-    margin-left: 1rem;
-    margin-right: 1rem;
-    padding-bottom: 0.5rem;
+    flex-direction: column;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    align-items: center;
+}
+.deck-container h4{
+    box-sizing: border-box;
+    text-shadow: #000 0px 0px 10px;
+}
+
+#player1-cards,
+#player2-cards {
+    flex: 1
+}
+
+.card-tiler-div {
+    text-align: center;
+    overflow: auto;
+    width: 80%;
 
     &::-webkit-scrollbar-button {
         display: none;
@@ -300,29 +312,7 @@ header p {
     };
 }
 
-/* Decks */
-.deck-container {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    align-items: center;
-}
-.deck-container h4{
-    box-sizing: border-box;
-    text-shadow: #000 0px 0px 10px;
-}
-
-#player1-cards,
-#player2-cards {
-    flex: 1;
-    text-align: center;
-    overflow: auto;
-}
-
-#player1-cards > .card-wrapper,
-#player2-cards > .card-wrapper {
+.card-tiler-div > .card-wrapper {
     display: inline-block;
     margin: 10px;
 }
