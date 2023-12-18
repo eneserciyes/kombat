@@ -1,3 +1,20 @@
+class Player{
+    constructor(name, budget, score){
+        this.name = name;
+        this.budget = budget;
+        this.score = score;
+        this.deck = [];
+    }
+}
+
+class Card{
+    constructor(name, strength){
+        this.name = name;
+        this.strength = strength;
+        this.img = FIGHTER_IMG_URL[name];
+    }
+}
+
 const FIGHTER_IMG_URL = {
     'cassie-cage': 'imgs/characters/cassie-cage.png',
     'ermac': 'imgs/characters/ermac.png',
@@ -23,22 +40,30 @@ const FIGHTER_IMG_URL = {
     'trooper': 'imgs/characters/trooper.webp'
 };
 
-class Player{
-    constructor(name, budget, score){
-        this.name = name;
-        this.budget = budget;
-        this.score = score;
-        this.deck = [];
-    }
-}
-
-class Card{
-    constructor(name, strength){
-        this.name = name;
-        this.strength = strength;
-        this.img = FIGHTER_IMG_URL[name];
-    }
-}
+const ALL_CARDS = [
+    new Card('cassie-cage', 4),
+    new Card('ermac', 5),
+    new Card('erron-black', 6),
+    new Card('goro', 8),
+    new Card('jacqui-briggs', 3),
+    new Card('johnny-cage', 5),
+    new Card('kano', 4),
+    new Card('kenshi', 7),
+    new Card('kitana', 8),
+    new Card('kotal-kahn', 6),
+    new Card('kung-lao', 5),
+    new Card('liu-kang', 7),
+    new Card('raiden', 10),
+    new Card('rain', 9),
+    new Card('scorpion', 8),
+    new Card('sergeant', 2),
+    new Card('shinnok', 10),
+    new Card('shirai-ryu', 1),
+    new Card('sonya-blade', 6),
+    new Card('subzero', 9),
+    new Card('takeda', 7),
+    new Card('trooper', 1)
+];
 
 let phase = 'selection';
 let round = 1;
@@ -48,7 +73,31 @@ let budgetRatio = 0.7;
 let player1 = new Player('Alice', max_rounds * 10 * budgetRatio, 0);
 let player2 = new Player('Bob', max_rounds * 10 * budgetRatio, 0);
 
-let cards = Array.from({ length: 2*max_rounds }, () => Math.floor(Math.random() * 10) + 1)
+let cards = generateCards(); 
+
+
+// start game
+updatePlayerInfo();
+updateAllCards();
+chooseCards();
+
+///////////////////////////
+//// HTML Functions ///////
+///////////////////////////
+function getCardHTML(card, selectable=false){
+    let border = (card.strength < 7) ? 'silver' : 'gold';
+    let selectableClass = (selectable) ? 'selectable' : '';
+    return `<div class="card-wrapper ${border} ${selectableClass}">
+        <div class="card" style="background-image: url(${card.img});">
+        <div class="card-info">
+        <p class="card-name">${card.name}</p>
+        <p class="card-strength">${card.strength}</p>
+        </div>
+        </div>
+        </div>`
+}
+
+
 ///////////////////////////
 //  DOM Update Functions //
 ///////////////////////////
@@ -65,7 +114,15 @@ function updatePlayerInfo(){
     deck2_pname.innerHTML = `${player2.name}'s deck`;
 }
 
-function updatePlayerDecks(player1, player2) {
+function updateAllCards(){
+    let allFightersDiv = document.querySelector('#all-fighters .card-tiler-div');
+    allFightersDiv.innerHTML = ''; // clear the div
+    cards.forEach(card => {
+        allFightersDiv.innerHTML += getCardHTML(card);
+    });
+}
+
+function updatePlayerDecks() {
     let player1CardsDiv = document.getElementById('player1-cards');
     let player2CardsDiv = document.getElementById('player2-cards');
 
@@ -75,15 +132,23 @@ function updatePlayerDecks(player1, player2) {
 
     // Add the cards to the divs
     player1.deck.forEach(card => {
-        player1CardsDiv.innerHTML += `<div class="card"><p>Strength: ${card}</p></div>`; // replace `card.name` with the property that contains the card's name
+        player1CardsDiv.innerHTML += getCardHTML(card); 
     });
 
     player2.deck.forEach(card => {
-        player2CardsDiv.innerHTML += `<div class="card"><p>Strength: ${card}</p></div>`; // replace `card.name` with the property that contains the card's name
+        player2CardsDiv.innerHTML += getCardHTML(card);
     });
 }
 
-function updateBudgets(player1, player2) {
+function updateSelectableCards(revealedCards) {
+    let selectableCardsDiv = document.querySelector('#selection-arena .card-tiler-div');
+    selectableCardsDiv.innerHTML = ''; // clear the div
+    revealedCards.forEach(card => {
+        selectableCardsDiv.innerHTML += getCardHTML(card, selectable=true);
+    });
+}
+
+function updateBudgets() {
     let player1Budget = document.querySelector('#player1-info #budget');
     let player2Budget = document.querySelector('#player2-info #budget');
 
@@ -91,7 +156,7 @@ function updateBudgets(player1, player2) {
     player2Budget.innerHTML = 'Budget: ' + player2.budget;
 }
 
-function updateScores(player1, player2) {
+function updateScores() {
     let player1Score = document.querySelector('#player1-info #score');
     let player2Score = document.querySelector('#player2-info #score');
 
@@ -99,7 +164,7 @@ function updateScores(player1, player2) {
     player2Score.innerHTML = 'Score: ' + player2.score;
 }
 
-function updateRound(round, max_rounds){
+function updateRound(){
     let roundInfo = document.querySelector('#round-info');
     roundInfo.innerHTML = `Round #${round}/${max_rounds}`;
 }
@@ -111,8 +176,10 @@ function updateTurn(currentPlayer){
 
 function updatePhase(phase){
     let phaseInfo = document.querySelector('#phase-info');
-    if (phase === 'matches'){
-        phaseInfo.innerHTML = `Playing Matches`;
+    if (phase === 'selection'){
+        phaseInfo.innerHTML = `Pick Your Fighters!`;
+    } else if (phase === 'matches'){
+        phaseInfo.innerHTML = `Fight!`;
     }
 }
 
@@ -148,9 +215,9 @@ function displayCourt(){
 
 function waitForSelection(){
     return new Promise ((resolve) => {
-        let firstCard = document.getElementById('first-card');
-        let secondCard = document.getElementById('second-card');
-        let passButton = document.getElementById('pass-button');
+        let selectableCards = document.querySelectorAll('#selection-arena .card-tiler-div .card-wrapper');
+        let firstCard = selectableCards[0];
+        let secondCard = selectableCards[1];
 
         // Define the event handler functions
         let firstCardHandler = function() {
@@ -160,7 +227,6 @@ function waitForSelection(){
             // Remove the event listeners
             firstCard.removeEventListener('click', firstCardHandler);
             secondCard.removeEventListener('click', secondCardHandler);
-            passButton.removeEventListener('click', passButtonHandler);
         };
 
         let secondCardHandler = function() {
@@ -170,22 +236,11 @@ function waitForSelection(){
             // Remove the event listeners
             firstCard.removeEventListener('click', firstCardHandler);
             secondCard.removeEventListener('click', secondCardHandler);
-            passButton.removeEventListener('click', passButtonHandler);
         };
-
-        let passButtonHandler = function() {
-            console.log('pass button clicked');
-            resolve('pass');
-
-            firstCard.removeEventListener('click', firstCardHandler);
-            secondCard.removeEventListener('click', secondCardHandler);
-            passButton.removeEventListener('click', passButtonHandler);
-        }
 
         // Add the event listeners
         firstCard.addEventListener('click', firstCardHandler);
         secondCard.addEventListener('click', secondCardHandler); 
-        passButton.addEventListener('click', passButtonHandler);
     });
 }
 
@@ -220,29 +275,41 @@ function chooseCardForMatch(currentPlayer){
         }});
 }
 
+///////////////////////////
+/////  Game Functions ////
+//////////////////////////
 
-function selectionRound(player, opponent, selectedCard, opponentCard){
-    let cardSelected = false;
-    if (selectedCard <= player.budget){
+
+function generateCards(){
+    let cards = [];
+    let length = ALL_CARDS.length;
+    for (let i = 0; i < 2*max_rounds; i++){ 
+        cards.push(ALL_CARDS[Math.floor(Math.random() * length)]);
+    }
+    return cards;
+}
+function applySelection(player, selectedCard, opponentCard){
+    let opponent = getOpponent(player);
+    if (selectedCard.strength <= player.budget){
+        console.log(`${player.name} selected ${selectedCard.name}`)
         player.deck.push(selectedCard);
-        player.budget -= selectedCard;
-        console.log(`${player.name} selected ${selectedCard}`)
+        player.budget -= selectedCard.strength;
         let idx = cards.indexOf(selectedCard);
         if (idx > -1) {
             cards.splice(idx, 1);
         }
-        cardSelected = true;
     }
-    if (cardSelected && opponentCard!=0 && opponentCard <= opponent.budget) {
-        console.log(`${opponent.name} gets ${opponentCard}`)
+    if (opponentCard.strength <= opponent.budget) {
+        console.log(`${opponent.name} gets ${opponentCard.name}`)
         opponent.deck.push(opponentCard);
-        opponent.budget -= opponentCard;
-        let idxOpp = cards.indexOf(opponentCard);
-        if (idxOpp > -1) {
-            cards.splice(idxOpp, 1);
+        opponent.budget -= opponentCard.strength;
+        let idx = cards.indexOf(opponentCard);
+        if (idx > -1) {
+            cards.splice(idx, 1);
         }
+    }else{
+        console.log(`${opponent.name} passes`)
     }
-    return cardSelected;
 }
 
 function playRound(card1, card2){
@@ -255,115 +322,79 @@ function playRound(card1, card2){
     }
 }
 
+function revealCards(currentPlayer){
+    let filteredCards = cards.filter(card => card.strength <= currentPlayer.budget);
 
-// pick two cards at random from the deck. Two cards must have lower value than the current player's budget.
-function pickCards(currentPlayer, cards){
-    const buttonFirstCard = document.querySelector('#first-card p');
-    const buttonSecondCard = document.querySelector('#second-card p');
+    if (filteredCards.length >= 2) {
+        console.log("Two cards available");
+        let idx1 = Math.floor(Math.random() * filteredCards.length);
+        let card1 = filteredCards[idx1];
 
-    filteredCards = cards.filter(card => card >= 0);
-
-    if (cards.length >= 2) {
-        // pick two cards at random
-        let chosenCard = filteredCards[Math.floor(Math.random() * filteredCards.length)];
-        // remove chosen card from the deck
-        let index = filteredCards.indexOf(chosenCard);
-        if (index > -1) {
-            filteredCards.splice(index, 1);
+        let idx2 = idx1;
+        while (idx2 === idx1){
+            idx2 = Math.floor(Math.random() * filteredCards.length);
         }
-        // pick another card at random
-        let otherCard = filteredCards[Math.floor(Math.random() * filteredCards.length)];
-        // change button text to show the cards
-        buttonFirstCard.innerHTML = `Strength: ${chosenCard}`;
-        buttonSecondCard.innerHTML = `Strength: ${otherCard}`;
-        return [chosenCard, otherCard];
-    } else if (cards.length === 1){
-        buttonFirstCard.innerHTML = `Strength: ${cards[0]}`;
-        buttonSecondCard.innerHTML = `No other players available`;
-        buttonSecondCard.style.backgroundColor = '#bfbfbf';
-        return cards;
-    } else if (cards.length === 0){
-        console.log("Selection phase over")
+        let card2 = filteredCards[idx2];
+
+        return [card1, card2];
+    } else if (filteredCards.length === 1){
+        console.log("Only one card available");
+        return filteredCards;
+    } else if (filteredCards.length === 0){
+        console.log("No cards left for this player, change turn to next player.")
         return [];
     }
 }
 
-let swapPlayers = (currentPlayer, otherPlayer) => [otherPlayer, currentPlayer];
+let getOpponent = (currentPlayer) => (currentPlayer === player1) ? player2 : player1;
 
-async function choose_cards(){
-    // generate 20 random cards with values between 1 and 10
-    console.log("All cards:")
-    console.log(cards);
-
+async function chooseCards(){
     let currentPlayer = player1;
-    let otherPlayer = player2;
     let finished = false;
     updateTurn(currentPlayer);
-    updateBudgets(player1, player2);
-    updateRound(round, max_rounds);
+    updateBudgets();
+    updateRound();
     while (!finished){
-        let revealedCards = pickCards(currentPlayer, cards);
+        let revealedCards = revealCards(currentPlayer);
         if (revealedCards.length === 0){
-            console.log(`Selection over`);
+            // TODO: do something here 
+            console.log("No cards left for this player, change turn to next player.")
+            finished = true;
+        } else if (revealedCards.length === 1){
+            // TODO: do something here
+            console.log("Only one card available");
+            finished = true;
         } else {
-            if (revealedCards.length === 1){
-                console.log(`${currentPlayer.name} can only pick one card: ${revealedCards[0]}`);
-            } 
-            showCard(revealedCards);
-            let is_card_selected_or_passed = false;
-            while (!is_card_selected_or_passed){ 
-                let selection = await waitForSelection();
-                if (selection === 'first'){
-                    if (revealedCards.length === 1) {
-                        is_card_selected_or_passed = selectionRound(currentPlayer, otherPlayer, revealedCards[0], 0);
-                    }else{
-                        is_card_selected_or_passed = selectionRound(currentPlayer, otherPlayer, revealedCards[0], revealedCards[1]);
-                        if (!is_card_selected_or_passed){
-                            alertCardNotSelected();
-                        }else{
-                            round = round+1;
-                            [currentPlayer, otherPlayer] = swapPlayers(currentPlayer, otherPlayer);
-                        }
-                    }
-                }else if (selection === 'second'){
-                    if (revealedCards.length === 1){
-                        console.log("Nothing happens")
-                    }else{
-                        is_card_selected_or_passed = selectionRound(currentPlayer, otherPlayer, revealedCards[1], revealedCards[0]);
-                        if (!is_card_selected_or_passed){
-                            alertCardNotSelected();
-                        }else{
-                            round= round+1;
-                            [currentPlayer, otherPlayer] = swapPlayers(currentPlayer, otherPlayer);
-                        }
-                    }
-                }else {
-                    console.log(`${currentPlayer.name} passed. Going to next player.`);
-                    is_card_selected_or_passed = true;
-                    [currentPlayer, otherPlayer] = swapPlayers(currentPlayer, otherPlayer);
-                }
+            updateSelectableCards(revealedCards);
+            let selection = await waitForSelection();
+            if (selection === 'first'){
+                applySelection(currentPlayer, revealedCards[0], revealedCards[1]);
+            } else if (selection === 'second'){
+                applySelection(currentPlayer, revealedCards[1], revealedCards[0]);
             }
-            updatePlayerDecks(player1, player2);
-            updateBudgets(player1, player2);
+            round = round+1;
+            currentPlayer = getOpponent(currentPlayer);
+
+            updatePlayerDecks();
+            updateBudgets();
+            updateAllCards();
             if (round > max_rounds){
                 finished = true;
                 console.log("Selection over");
-                updatePhase('matches');
+                /* updatePhase('matches');
                 hideSelection();
                 round = 1;
                 max_rounds = Math.min(player1.deck.length, player2.deck.length);
                 updateRound(round, max_rounds);
                 updateTurn(player1);
-                playMatches();
+                playMatches(); */
             }else{
                 updateRound(round, max_rounds);
                 updateTurn(currentPlayer);
-            }           
+            }  
         }
     }
 }
-
-
 
 async function playMatches(){
     displayCourt();
@@ -446,15 +477,9 @@ async function playMatches(){
     }
 }
 
-
-
 function alertCardNotSelected(){
     let alertText = document.querySelector('#selection-alert');
     alertText.innerHTML = 'You cannot select this card. If you cannot select both cards, you must pass.';
 }
 
 
-
-if (phase==='selection'){
-    choose_cards();
-}
