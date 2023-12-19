@@ -205,6 +205,22 @@ function makeDeckSelectable() {
     });
 }
 
+function displayWinner() {
+    let result = document.querySelector('#result');
+    let winnerText = document.querySelector('#result #winner');
+    let fightArena = document.querySelector('#fight-arena');
+    fightArena.style.display = 'none';
+    result.style.display = 'flex';
+    
+    if (player1.score > player2.score) {
+        winnerText.innerHTML = `${player1.name} wins!`;
+    } else if (player2.score > player1.score) {
+        winnerText.innerHTML = `${player2.name} wins!`;
+    } else {
+        winnerText.innerHTML = `It's a tie!`;
+    }
+}
+
 function showNotification(message) {
     let notification = document.querySelector('#notification');
     notification.innerHTML = message;
@@ -429,12 +445,22 @@ async function playFights() {
     }
 }
 
-function alertCardNotSelected() {
-    let alertText = document.querySelector('#selection-alert');
-    alertText.innerHTML = 'You cannot select this card. If you cannot select both cards, you must pass.';
+async function resolveCardsRemainingInTheDecks() {
+    if (player1.deck.length > 0) {
+        showNotification(`${player1.name} has ${player1.deck.length} cards left in their deck. They are added to their score.`);
+        player1.score += player1.deck.length;
+        player1.deck = [];
+        await sleep(2000);
+    } else if(player2.deck.length > 0) {
+        showNotification(`${player2.name} has ${player2.deck.length} cards left in their deck. They are added to their score.`);
+        player2.score += player2.deck.length;
+        player2.deck = [];
+        await sleep(2000);
+    } 
+    updateScores();
 }
 
-let phase = 'selection';
+let phase = '';
 let round = 1;
 let max_rounds = 6;
 let budgetRatio = 0.6;
@@ -446,6 +472,7 @@ let cards = generateCards();
 
 // start game
 async function playGame(){
+    updatePhase('selection');
     updatePlayerInfo();
     updateAllCards();
     await chooseCards();
@@ -453,6 +480,9 @@ async function playGame(){
     displayFightArena();
     updatePhase('fighting');
     await playFights();
+    await resolveCardsRemainingInTheDecks();
+    displayWinner();
 };
 
 playGame();
+
