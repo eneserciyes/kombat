@@ -1,37 +1,38 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Tennis Saga Game</title>
+    <title>Kombat</title>
     <link rel="stylesheet" type="text/css" href="kombat.css">
 </head>
-<body> 
+
+<body>
     <div id="title-heading-container">
         <h1 id="title-heading">KOMBAT</h1>
-    </div>      
-
+    </div>
     <div id="notification"></div>
-    
-    <header>
+
+    <header style="display:none">
         <div id="player1-info">
             <h3 id="name">Name</h3>
             <div class="budget-container">
                 <img src="imgs/gold.png" alt="coin">
-                <p id="budget">Budget: 40</p>
+                <p id="budget">Budget: []</p>
             </div>
-            <div class="score-container" style="display: none;" >
+            <div class="score-container" style="display: none;">
                 <p id="score">Score: Score</p>
             </div>
         </div>
         <div id="game-info">
             <h2 id="phase-info">Pick Your Fighters!</h2>
-            <p id="round-info">Round: #1/10</p>
+            <p id="round-info">Round: #X/XX</p>
             <p id="turn-info">Player 1's turn</p>
         </div>
-    <div id="player2-info">
+        <div id="player2-info">
             <h3 id="name">Name</h3>
             <div class="budget-container">
                 <img src="imgs/gold.png" alt="coin">
-                <p id="budget">Budget: 40</p>
+                <p id="budget">Budget: []</p>
             </div>
             <div class="score-container" style="display: none;">
                 <p id="score">Score: Score</p>
@@ -39,7 +40,7 @@
 
     </header>
 
-    <section id="game-board">
+    <section id="game-board" style="display:none">
         <div class="deck-container">
             <h2 id="p1-deck-name">Player 1's Deck</h2>
             <div id="player1-cards" class="card-tiler-div">
@@ -69,7 +70,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="deck-container">
             <h2 id="p2-deck-name">Player 2's Deck</h2>
             <div id="player2-cards" class="card-tiler-div">
@@ -78,6 +79,56 @@
         </div>
     </section>
 
+
+    <div id="settings-screen" class="screen">
+        <div id="settings-modal">
+            <div id="settings-modal-header">
+                <h1 id="settings-modal-header-title">Kombat</h1>
+                <h2 id="settings-modal-header-team">Enes</h2>
+            </div>
+            <div id="settings-modal-intro">
+                <div class="intro-text">
+                    <p>Welcome to <span class="kombat-title">Kombat</span>, a strategy card game. Players pick their fighters
+                    according to their budget and then choose which fighters to fight with opponent's fighters.</p>
+                    <p>Choose your settings below and click Start Game to begin.</p>
+                </div>
+            </div>
+            <div id="settings-modal-body">
+                <div id="settings">
+                    <div id="settings-picker">
+                        <div class="setting-picker-item"><label class="setting-picker-item-label">Play
+                                Mode</label><select class="setting-picker-item-input setting-picker-item-input-select">
+                                <option value="Human vs Human">Human vs Human</option>
+                                <option value="Me vs Computer">Me vs Computer</option>
+                            </select></div>
+                        <div></div>
+                        <div class="setting-picker-item" id="budget-ratio-picker-item"><label class="setting-picker-item-label">Budget Ratio</label>
+                            <div class="setting-picker-item-input-container"><input
+                                    class="setting-picker-item-input setting-picker-item-input-int-range" type="range"
+                                    min="4" max="7">
+                                <div class="setting-picker-item-input-value">0.6</div>
+                            </div>
+                        </div>
+                        <div class="setting-picker-item" id="max-rounds-picker-item"><label class="setting-picker-item-label">Max Rounds</label>
+                            <div class="setting-picker-item-input-container"><input
+                                    class="setting-picker-item-input setting-picker-item-input-int-range" type="range"
+                                    min="5" max="10">
+                                <div class="setting-picker-item-input-value">6</div>
+                            </div>
+                        </div>
+                        <div class="setting-picker-item" id="player1-name-picker-item"><label class="setting-picker-item-label">Player 1
+                                Name</label><input class="setting-picker-item-input setting-picker-item-input-string"
+                                type="text"></div>
+                        <div class="setting-picker-item" id="player2-name-picker-item"><label class="setting-picker-item-label">Player 2
+                                Name</label><input class="setting-picker-item-input setting-picker-item-input-string"
+                                type="text"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="settings-modal-footer"><button id="start-game-button">Start Game</button></div>
+        </div>
+    </div>
     <script src="kombat.js"></script>
 </body>
+
 </html>

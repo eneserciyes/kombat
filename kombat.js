@@ -106,7 +106,7 @@ function updateAllCards() {
     });
 }
 
-function updatePlayerDecks(selectable=false) {
+function updatePlayerDecks(selectable = false) {
     let player1CardsDiv = document.getElementById('player1-cards');
     let player2CardsDiv = document.getElementById('player2-cards');
 
@@ -211,7 +211,7 @@ function displayWinner() {
     let fightArena = document.querySelector('#fight-arena');
     fightArena.style.display = 'none';
     result.style.display = 'flex';
-    
+
     if (player1.score > player2.score) {
         winnerText.innerHTML = `${player1.name} wins!`;
     } else if (player2.score > player1.score) {
@@ -228,6 +228,24 @@ function showNotification(message) {
     setTimeout(function() {
         notification.style.display = 'none';
     }, 5000);
+}
+
+///////////////////////////
+///  Settings Functions ///
+///////////////////////////
+{
+    let sliderBudgetRatio = document.querySelector('#budget-ratio-picker-item input');
+    let sliderMaxRounds = document.querySelector('#max-rounds-picker-item input');
+    let sliderBudgetRatioValue = document.querySelector('#budget-ratio-picker-item .setting-picker-item-input-value');
+    let sliderMaxRoundsValue = document.querySelector('#max-rounds-picker-item .setting-picker-item-input-value');
+
+    sliderBudgetRatio.onchange = function() {
+        sliderBudgetRatioValue.innerHTML = sliderBudgetRatio.value / 10;
+    }
+    sliderMaxRounds.onchange = function() {
+        sliderMaxRoundsValue.innerHTML = sliderMaxRounds.value;
+    }
+
 }
 
 ///////////////////////////
@@ -277,7 +295,7 @@ function chooseCardForMatch(currentPlayer) {
                 card.addEventListener('click', function() {
                     let selectedCard = currentPlayer.deck[idx];
                     currentPlayer.deck.splice(idx, 1);
-                    updatePlayerDecks(selectable=true);
+                    updatePlayerDecks(selectable = true);
                     resolve(selectedCard);
                 });
             });
@@ -287,7 +305,7 @@ function chooseCardForMatch(currentPlayer) {
                 card.addEventListener('click', function() {
                     let selectedCard = currentPlayer.deck[idx];
                     currentPlayer.deck.splice(idx, 1);
-                    updatePlayerDecks(selectable=true);
+                    updatePlayerDecks(selectable = true);
                     resolve(selectedCard);
                 });
             });
@@ -298,7 +316,7 @@ function chooseCardForMatch(currentPlayer) {
 function waitForPlayButton() {
     return new Promise((resolve) => {
         let playButton = document.querySelector('#play-button');
-        let playButtonHandler = function() { resolve(); playButton.removeEventListener('click', playButtonHandler);};
+        let playButtonHandler = function() { resolve(); playButton.removeEventListener('click', playButtonHandler); };
         playButton.addEventListener('click', playButtonHandler);
     });
 }
@@ -455,12 +473,12 @@ async function resolveCardsRemainingInTheDecks() {
         player1.score += player1.deck.length;
         player1.deck = [];
         await sleep(2000);
-    } else if(player2.deck.length > 0) {
+    } else if (player2.deck.length > 0) {
         showNotification(`${player2.name} has ${player2.deck.length} cards left in their deck. They are added to their score.`);
         player2.score += player2.deck.length;
         player2.deck = [];
         await sleep(2000);
-    } 
+    }
     updateScores();
 }
 
@@ -475,7 +493,7 @@ let player2 = new Player('Bob', max_rounds * 10 * budgetRatio, 0);
 let cards = generateCards();
 
 // start game
-async function playGame(){
+async function playGame() {
     updatePhase('selection');
     updatePlayerInfo();
     updateAllCards();
