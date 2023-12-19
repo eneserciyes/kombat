@@ -160,7 +160,7 @@ function updateScores() {
 
 function updateRound() {
     let roundInfo = document.querySelector('#round-info');
-    roundInfo.innerHTML = `Round #${round}/${max_rounds}`;
+    roundInfo.innerHTML = `Round #${round}/${MAX_ROUNDS}`;
 }
 
 function updateTurn(currentPlayer) {
@@ -230,6 +230,18 @@ function showNotification(message) {
     }, 5000);
 }
 
+function hideSettings() {
+    let settings = document.querySelector('#settings-screen');
+    settings.style.display = 'none';
+}
+
+function displayGame() {
+    let game = document.querySelector('#game-board');
+    let header = document.querySelector('header');
+    header.style.display = 'flex';
+    game.style.display = 'flex';
+}
+
 ///////////////////////////
 ///  Settings Functions ///
 ///////////////////////////
@@ -239,7 +251,9 @@ function showNotification(message) {
     let selectMode = document.querySelector('#play-mode-picker-item select');
     let sliderBudgetRatioValue = document.querySelector('#budget-ratio-picker-item .setting-picker-item-input-value');
     let sliderMaxRoundsValue = document.querySelector('#max-rounds-picker-item .setting-picker-item-input-value');
+    let player1Name = document.querySelector('#player1-name-picker-item');
     let player2Name = document.querySelector('#player2-name-picker-item');
+    let startButton = document.querySelector('#start-game-button');
 
     sliderBudgetRatio.onchange = function() {
         sliderBudgetRatioValue.innerHTML = sliderBudgetRatio.value / 10;
@@ -255,6 +269,17 @@ function showNotification(message) {
         }
     }
 
+    startButton.onclick = function() {
+        let player1NameInput = player1Name.querySelector('input').value;
+        let player2NameInput = player2Name.querySelector('input').value;
+    
+        let sliderBudgetRatioValue = sliderBudgetRatio.value / 10;
+        let sliderMaxRoundsValue = sliderMaxRounds.value;
+
+        hideSettings();
+        displayGame();
+        playGame(player1NameInput, player2NameInput, sliderBudgetRatioValue, sliderMaxRoundsValue);
+    }
 }
 
 ///////////////////////////
@@ -336,7 +361,7 @@ function waitForPlayButton() {
 function generateCards() {
     let cards = [];
     let length = ALL_CARDS.length;
-    for (let i = 0; i < 2 * max_rounds; i++) {
+    for (let i = 0; i < 2 * MAX_ROUNDS; i++) {
         cards.push(ALL_CARDS[Math.floor(Math.random() * length)]);
     }
     return cards;
@@ -440,7 +465,7 @@ async function chooseCards() {
 
 async function playFights() {
     // update max rounds
-    max_rounds = Math.min(player1.deck.length, player2.deck.length);
+    MAX_ROUNDS = Math.min(player1.deck.length, player2.deck.length);
     updateScores(player1, player2);
     let finished = false;
     while (!finished) {
@@ -467,11 +492,11 @@ async function playFights() {
         clearFightArena();
         // update round
         round = round + 1;
-        if (round > max_rounds) {
+        if (round > MAX_ROUNDS) {
             finished = true;
             console.log("Game over");
         } else {
-            updateRound(round, max_rounds);
+            updateRound(round, MAX_ROUNDS);
         }
     }
 }
@@ -493,16 +518,24 @@ async function resolveCardsRemainingInTheDecks() {
 
 let phase = '';
 let round = 1;
-let max_rounds = 6;
-let budgetRatio = 0.6;
+let MAX_ROUNDS = 6;
+let BUDGET_RATIO = 0.6;
 
-let player1 = new Player('Alice', max_rounds * 10 * budgetRatio, 0);
-let player2 = new Player('Bob', max_rounds * 10 * budgetRatio, 0);
+let player1 = new Player('Alice', MAX_ROUNDS * 10 * BUDGET_RATIO, 0);
+let player2 = new Player('Bob', MAX_ROUNDS * 10 * BUDGET_RATIO, 0);
 
 let cards = generateCards();
 
 // start game
-async function playGame() {
+async function playGame(player1Name, player2Name, budgetRatio, maxRounds) {
+    // initialize game
+    player1.name = player1Name;
+    player2.name = player2Name;
+    player1.budget = maxRounds * 10 * budgetRatio;
+    player2.budget = maxRounds * 10 * budgetRatio;
+    MAX_ROUNDS = maxRounds;
+    BUDGET_RATIO = budgetRatio;
+
     updatePhase('selection');
     updatePlayerInfo();
     updateAllCards();
@@ -514,6 +547,3 @@ async function playGame() {
     await resolveCardsRemainingInTheDecks();
     displayWinner();
 };
-
-playGame();
-
