@@ -66,8 +66,6 @@ const ALL_CARDS = [
     new Card('trooper', 1)
 ];
 
-
-
 ///////////////////////////
 //// HTML Functions ///////
 ///////////////////////////
@@ -83,7 +81,6 @@ function getCardHTML(card, selectable = false) {
         </div>
         </div>`
 }
-
 
 ///////////////////////////
 //  DOM Update Functions //
@@ -262,18 +259,20 @@ function chooseCardForMatch(currentPlayer) {
             let playerDeckCards = document.querySelectorAll('#player1-cards .card-wrapper');
             playerDeckCards.forEach((card, idx) => {
                 card.addEventListener('click', function() {
+                    let selectedCard = currentPlayer.deck[idx];
                     currentPlayer.deck.splice(idx, 1);
                     updatePlayerDecks(selectable=true);
-                    resolve(idx);
+                    resolve(selectedCard);
                 });
             });
         } else {
             let playerDeckCards = document.querySelectorAll('#player2-cards .card-wrapper');
             playerDeckCards.forEach((card, idx) => {
                 card.addEventListener('click', function() {
+                    let selectedCard = currentPlayer.deck[idx];
                     currentPlayer.deck.splice(idx, 1);
                     updatePlayerDecks(selectable=true);
-                    resolve(idx);
+                    resolve(selectedCard);
                 });
             });
         }
@@ -283,7 +282,6 @@ function chooseCardForMatch(currentPlayer) {
 ///////////////////////////
 /////  Game Functions ////
 //////////////////////////
-
 
 function generateCards() {
     let cards = [];
@@ -398,13 +396,11 @@ async function playFights() {
     let playButton = document.querySelector('#play-button');
     while (!finished) {
         updateTurn(player1);
-        let i1 = await chooseCardForMatch(player1);
-        let card1 = player1.deck[i1];
+        let card1 = await chooseCardForMatch(player1);
         updateFightArena(card1);
 
         updateTurn(player2);
-        let i2 = await chooseCardForMatch(player2);
-        let card2 = player2.deck[i2];
+        let card2 = await chooseCardForMatch(player2);
         updateFightArena(card2);
 
         let playButtonEventHandler = function() {
