@@ -181,9 +181,11 @@ function updatePhase(phase) {
 }
 
 function hideSelectionArena() {
-    let selectableCards = document.querySelector('#selection-arena');
+    let selectionArena = document.querySelector('#selection-arena');
+    let allFighters = document.querySelector('#all-fighters');
     let budgets = document.querySelectorAll('.budget');
-    selectableCards.style.display = 'none';
+    selectionArena.style.display = 'none';
+    allFighters.style.display = 'none';
     budgets.forEach(budget => {
         budget.style.display = 'none';
     });
@@ -387,7 +389,6 @@ async function playFights() {
     let finished = false;
     let playButton = document.querySelector('#play-button');
     while (!finished) {
-        debugger
         updateTurn(player1);
         let i1 = await chooseCardForMatch(player1);
         let card1 = player1.deck[i1];
