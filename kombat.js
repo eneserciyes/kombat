@@ -276,9 +276,11 @@ function displayGame() {
         let sliderBudgetRatioValue = sliderBudgetRatio.value / 10;
         let sliderMaxRoundsValue = sliderMaxRounds.value;
 
+        let playMode = selectMode.value;
+
         hideSettings();
         displayGame();
-        playGame(player1NameInput, player2NameInput, sliderBudgetRatioValue, sliderMaxRoundsValue);
+        playGame(player1NameInput, player2NameInput, sliderBudgetRatioValue, sliderMaxRoundsValue, playMode);
     }
 }
 
@@ -441,7 +443,17 @@ async function chooseCards() {
             currentPlayer.finished_selection = true;
         } else {
             updateSelectableCards(revealedCards);
-            let selection = await waitForSelection();
+            let selection = null;
+            if (currentPlayer.name === "Computer"){
+                if (revealedCards[0].strength >= revealedCards[1].strength){
+                    selection = 'first';
+                } else {
+                    selection = 'second';
+                }
+                await sleep(2000);
+            }else{
+                selection = await waitForSelection();
+            }
             if (selection === 'first') {
                 applySelection(currentPlayer, revealedCards[0], revealedCards[1]);
             } else if (selection === 'second') {
@@ -471,7 +483,23 @@ async function playFights() {
         updateFightArena(card1);
 
         updateTurn(player2);
-        let card2 = await chooseCardForMatch(player2);
+        let card2 = null;
+        if (player2.name === "Computer"){
+            let candidateCards = player2.deck.filter(card => card.strength >= card1.strength); 
+            let idx = null
+            if (candidateCards.length > 0){
+                idx = Math.floor(Math.random() * candidateCards.length);
+                card2 = candidateCards[idx];
+            }else{
+                idx = Math.floor(Math.random() * player2.deck.length);
+                card2 = player2.deck[idx];
+            }
+            player2.deck.splice(idx, 1); 
+            await sleep(2000);
+            updatePlayerDecks(selectable = true);
+        }else{
+            card2 = await chooseCardForMatch(player2);
+        }
         updateFightArena(card2);
 
         await waitForPlayButton();
@@ -518,14 +546,23 @@ let round = 1;
 let MAX_ROUNDS = null;
 let BUDGET_RATIO = null;
 
-let player1 = null//new Player('Alice', MAX_ROUNDS * 10 * BUDGET_RATIO, 0);
-let player2 = null//new Player('Bob', MAX_ROUNDS * 10 * BUDGET_RATIO, 0);
+let player1 = null
+let player2 = null
 
 let cards = null;
 
 // start game
-async function playGame(player1Name, player2Name, budgetRatio, maxRounds) {
+async function playGame(player1Name, player2Name, budgetRatio, maxRounds, playMode) {
     // initialize game
+    if (player1Name == ""){
+        player1Name = "Player 1";
+    }
+    if (player2Name == ""){
+        player2Name = "Player 2";
+    }
+    if (playMode === "Me vs Computer") {
+        player2Name = "Computer";
+    }
     player1 = new Player(player1Name, maxRounds * 10 * budgetRatio, 0);
     player2 = new Player(player2Name, maxRounds * 10 * budgetRatio, 0);
     MAX_ROUNDS = maxRounds;
@@ -546,7 +583,6 @@ async function playGame(player1Name, player2Name, budgetRatio, maxRounds) {
     updateRound();
 
     await playFights();
-
     await resolveCardsRemainingInTheDecks();
 
     displayWinner();
