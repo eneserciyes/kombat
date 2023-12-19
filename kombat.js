@@ -109,7 +109,7 @@ function updateAllCards() {
     });
 }
 
-function updatePlayerDecks() {
+function updatePlayerDecks(selectable=false) {
     let player1CardsDiv = document.getElementById('player1-cards');
     let player2CardsDiv = document.getElementById('player2-cards');
 
@@ -119,11 +119,11 @@ function updatePlayerDecks() {
 
     // Add the cards to the divs
     player1.deck.forEach(card => {
-        player1CardsDiv.innerHTML += getCardHTML(card);
+        player1CardsDiv.innerHTML += getCardHTML(card, selectable = selectable);
     });
 
     player2.deck.forEach(card => {
-        player2CardsDiv.innerHTML += getCardHTML(card);
+        player2CardsDiv.innerHTML += getCardHTML(card, selectable = selectable);
     });
 }
 
@@ -198,6 +198,14 @@ function displayFightArena() {
     scores.forEach(score => {
         score.style.display = 'flex';
     });
+    makeDeckSelectable();
+}
+
+function makeDeckSelectable() {
+    let playerDeckCards = document.querySelectorAll('.deck-container .card-wrapper');
+    playerDeckCards.forEach(card => {
+        card.classList.add('selectable');
+    });
 }
 
 function showNotification(message) {
@@ -255,7 +263,7 @@ function chooseCardForMatch(currentPlayer) {
             playerDeckCards.forEach((card, idx) => {
                 card.addEventListener('click', function() {
                     currentPlayer.deck.splice(idx, 1);
-                    updatePlayerDecks();
+                    updatePlayerDecks(selectable=true);
                     resolve(idx);
                 });
             });
@@ -264,7 +272,7 @@ function chooseCardForMatch(currentPlayer) {
             playerDeckCards.forEach((card, idx) => {
                 card.addEventListener('click', function() {
                     currentPlayer.deck.splice(idx, 1);
-                    updatePlayerDecks();
+                    updatePlayerDecks(selectable=true);
                     resolve(idx);
                 });
             });
