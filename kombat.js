@@ -295,6 +295,13 @@ function chooseCardForMatch(currentPlayer) {
     });
 }
 
+function waitForPlayButton() {
+    return new Promise((resolve) => {
+        let playButton = document.querySelector('#play-button');
+        let playButtonHandler = function() { resolve(); playButton.removeEventListener('click', playButtonHandler);};
+        playButton.addEventListener('click', playButtonHandler);
+    });
+}
 ///////////////////////////
 /////  Game Functions ////
 //////////////////////////
@@ -409,7 +416,6 @@ async function playFights() {
     max_rounds = Math.min(player1.deck.length, player2.deck.length);
     updateScores(player1, player2);
     let finished = false;
-    let playButton = document.querySelector('#play-button');
     while (!finished) {
         updateTurn(player1);
         let card1 = await chooseCardForMatch(player1);
@@ -419,29 +425,27 @@ async function playFights() {
         let card2 = await chooseCardForMatch(player2);
         updateFightArena(card2);
 
-        let playButtonEventHandler = function() {
-            let winner = playRound(card1, card2);
-            if (winner === 1) {
-                player1.score = player1.score + 1;
-                console.log(`${player1.name} wins this match!`);
-            } else {
-                player2.score = player2.score + 1;
-                console.log(`${player2.name} wins this match!`);
-            }
-            updateScores(player1, player2);
-            // hide court cards
-            clearFightArena();
-            // update round
-            round = round + 1;
-            if (round > max_rounds) {
-                finished = true;
-                console.log("Game over");
-            } else {
-                updateRound(round, max_rounds);
-            }
-            playButton.removeEventListener('click', playButtonEventHandler);
+        await waitForPlayButton();
+
+        let winner = playRound(card1, card2);
+        if (winner === 1) {
+            player1.score = player1.score + 1;
+            console.log(`${player1.name} wins this match!`);
+        } else {
+            player2.score = player2.score + 1;
+            console.log(`${player2.name} wins this match!`);
         }
-        playButton.addEventListener('click', playButtonEventHandler);
+        updateScores(player1, player2);
+        // hide court cards
+        clearFightArena();
+        // update round
+        round = round + 1;
+        if (round > max_rounds) {
+            finished = true;
+            console.log("Game over");
+        } else {
+            updateRound(round, max_rounds);
+        }
     }
 }
 
