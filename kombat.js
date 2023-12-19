@@ -1,14 +1,15 @@
-class Player{
-    constructor(name, budget, score){
+class Player {
+    constructor(name, budget, score) {
         this.name = name;
         this.budget = budget;
         this.score = score;
         this.deck = [];
+        this.finished_selection = false;
     }
 }
 
-class Card{
-    constructor(name, strength){
+class Card {
+    constructor(name, strength) {
         this.name = name;
         this.strength = strength;
         this.img = FIGHTER_IMG_URL[name];
@@ -65,26 +66,12 @@ const ALL_CARDS = [
     new Card('trooper', 1)
 ];
 
-let phase = 'selection';
-let round = 1;
-let max_rounds = 6;
-let budgetRatio = 0.7;
 
-let player1 = new Player('Alice', max_rounds * 10 * budgetRatio, 0);
-let player2 = new Player('Bob', max_rounds * 10 * budgetRatio, 0);
-
-let cards = generateCards(); 
-
-
-// start game
-updatePlayerInfo();
-updateAllCards();
-chooseCards();
 
 ///////////////////////////
 //// HTML Functions ///////
 ///////////////////////////
-function getCardHTML(card, selectable=false){
+function getCardHTML(card, selectable = false) {
     let border = (card.strength < 7) ? 'silver' : 'gold';
     let selectableClass = (selectable) ? 'selectable' : '';
     return `<div class="card-wrapper ${border} ${selectableClass}">
@@ -102,7 +89,7 @@ function getCardHTML(card, selectable=false){
 //  DOM Update Functions //
 ///////////////////////////
 
-function updatePlayerInfo(){
+function updatePlayerInfo() {
     let p1name = document.querySelector('#player1-info #name');
     let p2name = document.querySelector('#player2-info #name');
     let deck1_pname = document.querySelector('#p1-deck-name');
@@ -114,7 +101,7 @@ function updatePlayerInfo(){
     deck2_pname.innerHTML = `${player2.name}'s deck`;
 }
 
-function updateAllCards(){
+function updateAllCards() {
     let allFightersDiv = document.querySelector('#all-fighters .card-tiler-div');
     allFightersDiv.innerHTML = ''; // clear the div
     cards.forEach(card => {
@@ -132,7 +119,7 @@ function updatePlayerDecks() {
 
     // Add the cards to the divs
     player1.deck.forEach(card => {
-        player1CardsDiv.innerHTML += getCardHTML(card); 
+        player1CardsDiv.innerHTML += getCardHTML(card);
     });
 
     player2.deck.forEach(card => {
@@ -144,8 +131,18 @@ function updateSelectableCards(revealedCards) {
     let selectableCardsDiv = document.querySelector('#selection-arena .card-tiler-div');
     selectableCardsDiv.innerHTML = ''; // clear the div
     revealedCards.forEach(card => {
-        selectableCardsDiv.innerHTML += getCardHTML(card, selectable=true);
+        selectableCardsDiv.innerHTML += getCardHTML(card, selectable = true);
     });
+}
+
+function updateFightArena(card) {
+    let fightArenaDiv = document.querySelector('#fight-arena .card-tiler-div');
+    fightArenaDiv.innerHTML += getCardHTML(card);
+}
+
+function clearFightArena() {
+    let fightArenaDiv = document.querySelector('#fight-arena .card-tiler-div');
+    fightArenaDiv.innerHTML = '';
 }
 
 function updateBudgets() {
@@ -164,57 +161,62 @@ function updateScores() {
     player2Score.innerHTML = 'Score: ' + player2.score;
 }
 
-function updateRound(){
+function updateRound() {
     let roundInfo = document.querySelector('#round-info');
     roundInfo.innerHTML = `Round #${round}/${max_rounds}`;
 }
 
-function updateTurn(currentPlayer){
+function updateTurn(currentPlayer) {
     let turnInfo = document.querySelector('#turn-info');
     turnInfo.innerHTML = `${currentPlayer.name}'s turn`;
 }
 
-function updatePhase(phase){
+function updatePhase(phase) {
     let phaseInfo = document.querySelector('#phase-info');
-    if (phase === 'selection'){
+    if (phase === 'selection') {
         phaseInfo.innerHTML = `Pick Your Fighters!`;
-    } else if (phase === 'matches'){
+    } else if (phase === 'fighting') {
         phaseInfo.innerHTML = `Fight!`;
     }
 }
 
-function hideSelection(){
-    let selectableCards = document.querySelector('#selectable-cards');
-    let passButton = document.querySelector('#pass-button');
-    let selectionAlert = document.querySelector('#selection-alert');
-    let budgets = document.querySelectorAll('#budget');
+function hideSelectionArena() {
+    let selectableCards = document.querySelector('#selection-arena');
+    let budgets = document.querySelectorAll('.budget');
     selectableCards.style.display = 'none';
-    passButton.style.display = 'none';
-    selectionAlert.style.display = 'none';
     budgets.forEach(budget => {
         budget.style.display = 'none';
     });
 }
 
-function displayCourt(){
-    let court = document.querySelector('#court');
-    let playButton = document.querySelector('#play-button');
+function displayFightArena() {
+    let fightArena = document.querySelector('#fight-arena');
     let scores = document.querySelectorAll('#score');
-    let courtText = document.querySelector('#court-text');
-    court.style.display = 'flex';
-    playButton.style.display = 'block';
-    courtText.style.display = 'block';
+    fightArena.style.display = 'flex';
     scores.forEach(score => {
-        score.style.display = 'block';
+        score.style.display = 'flex';
     });
+}
+
+function showNotification(message) {
+    let notification = document.querySelector('#notification');
+    notification.innerHTML = message;
+    notification.style.display = 'block';
+    setTimeout(function() {
+        notification.style.display = 'none';
+    }, 5000);
 }
 
 ///////////////////////////
 ///  Listener Functions ///
 ///////////////////////////
 
-function waitForSelection(){
-    return new Promise ((resolve) => {
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function waitForSelection() {
+    return new Promise((resolve) => {
         let selectableCards = document.querySelectorAll('#selection-arena .card-tiler-div .card-wrapper');
         let firstCard = selectableCards[0];
         let secondCard = selectableCards[1];
@@ -240,39 +242,32 @@ function waitForSelection(){
 
         // Add the event listeners
         firstCard.addEventListener('click', firstCardHandler);
-        secondCard.addEventListener('click', secondCardHandler); 
+        secondCard.addEventListener('click', secondCardHandler);
     });
 }
 
-function chooseCardForMatch(currentPlayer){
-    return new Promise ((resolve) => {
-        if (currentPlayer.id === 1) {
-            let playerDeckCards = document.querySelectorAll('#player1-cards .card');
-            playerDeckCards.forEach(card => {
-                card.addEventListener('click', function(){
-                    console.log('card clicked');
-                    idx = currentPlayer.deck.indexOf(parseInt(card.textContent.split(' ')[1]))
-                    if (idx > -1) {
-                        currentPlayer.deck.splice(idx, 1);
-                    }
-                    updatePlayerDecks(player1, player2);
-                    resolve(card);
+function chooseCardForMatch(currentPlayer) {
+    return new Promise((resolve) => {
+        if (currentPlayer === player1) {
+            let playerDeckCards = document.querySelectorAll('#player1-cards .card-wrapper');
+            playerDeckCards.forEach((card, idx) => {
+                card.addEventListener('click', function() {
+                    currentPlayer.deck.splice(idx, 1);
+                    updatePlayerDecks();
+                    resolve(idx);
                 });
             });
         } else {
-            let playerDeckCards = document.querySelectorAll('#player2-cards .card');
-            playerDeckCards.forEach(card => {
-                card.addEventListener('click', function(){
-                    console.log('card clicked');
-                    idx = currentPlayer.deck.indexOf(parseInt(card.textContent.split(' ')[1]))
-                    if (idx > -1) {
-                        currentPlayer.deck.splice(idx, 1);
-                    }
-                    updatePlayerDecks(player1, player2);
-                    resolve(card);
+            let playerDeckCards = document.querySelectorAll('#player2-cards .card-wrapper');
+            playerDeckCards.forEach((card, idx) => {
+                card.addEventListener('click', function() {
+                    currentPlayer.deck.splice(idx, 1);
+                    updatePlayerDecks();
+                    resolve(idx);
                 });
             });
-        }});
+        }
+    });
 }
 
 ///////////////////////////
@@ -280,206 +275,179 @@ function chooseCardForMatch(currentPlayer){
 //////////////////////////
 
 
-function generateCards(){
+function generateCards() {
     let cards = [];
     let length = ALL_CARDS.length;
-    for (let i = 0; i < 2*max_rounds; i++){ 
+    for (let i = 0; i < 2 * max_rounds; i++) {
         cards.push(ALL_CARDS[Math.floor(Math.random() * length)]);
     }
     return cards;
 }
-function applySelection(player, selectedCard, opponentCard){
-    let opponent = getOpponent(player);
-    if (selectedCard.strength <= player.budget){
-        console.log(`${player.name} selected ${selectedCard.name}`)
-        player.deck.push(selectedCard);
-        player.budget -= selectedCard.strength;
-        let idx = cards.indexOf(selectedCard);
+function addCardToDeck(player, card) {
+    if (card.strength <= player.budget) {
+        console.log(`${player.name} gets ${card.name}`)
+        player.deck.push(card);
+        player.budget -= card.strength;
+        let idx = cards.indexOf(card);
         if (idx > -1) {
             cards.splice(idx, 1);
         }
-    }
-    if (opponentCard.strength <= opponent.budget) {
-        console.log(`${opponent.name} gets ${opponentCard.name}`)
-        opponent.deck.push(opponentCard);
-        opponent.budget -= opponentCard.strength;
-        let idx = cards.indexOf(opponentCard);
-        if (idx > -1) {
-            cards.splice(idx, 1);
-        }
-    }else{
-        console.log(`${opponent.name} passes`)
     }
 }
+function applySelection(player, selectedCard, opponentCard) {
+    let opponent = getOpponent(player);
+    addCardToDeck(player, selectedCard);
+    addCardToDeck(opponent, opponentCard);
+}
 
-function playRound(card1, card2){
-    winProb = card1/(card1+card2);
+function playRound(card1, card2) {
+    winProb = card1.strength / (card1.strength + card2.strength);
     let rand = Math.random();
-    if (rand < winProb){
+    if (rand < winProb) {
         return 1;
-    } else if (rand > winProb){
+    } else if (rand > winProb) {
         return 2;
     }
 }
 
-function revealCards(currentPlayer){
+function revealCards(currentPlayer) {
     let filteredCards = cards.filter(card => card.strength <= currentPlayer.budget);
 
     if (filteredCards.length >= 2) {
-        console.log("Two cards available");
         let idx1 = Math.floor(Math.random() * filteredCards.length);
         let card1 = filteredCards[idx1];
 
         let idx2 = idx1;
-        while (idx2 === idx1){
+        while (idx2 === idx1) {
             idx2 = Math.floor(Math.random() * filteredCards.length);
         }
         let card2 = filteredCards[idx2];
 
         return [card1, card2];
-    } else if (filteredCards.length === 1){
-        console.log("Only one card available");
+    } else if (filteredCards.length === 1) {
         return filteredCards;
-    } else if (filteredCards.length === 0){
-        console.log("No cards left for this player, change turn to next player.")
+    } else if (filteredCards.length === 0) {
         return [];
+    }
+}
+function switchPlayerForSelectionPhase(currentPlayer) {
+    opponent = getOpponent(currentPlayer);
+    if (!opponent.finished_selection) {
+        return opponent;
+    } else {
+        return currentPlayer;
     }
 }
 
 let getOpponent = (currentPlayer) => (currentPlayer === player1) ? player2 : player1;
 
-async function chooseCards(){
+async function chooseCards() {
     let currentPlayer = player1;
-    let finished = false;
     updateTurn(currentPlayer);
     updateBudgets();
     updateRound();
-    while (!finished){
+    while (!player1.finished_selection || !player2.finished_selection) {
         let revealedCards = revealCards(currentPlayer);
-        if (revealedCards.length === 0){
-            // TODO: do something here 
-            console.log("No cards left for this player, change turn to next player.")
-            finished = true;
-        } else if (revealedCards.length === 1){
-            // TODO: do something here
-            console.log("Only one card available");
-            finished = true;
+        if (revealedCards.length === 0) {
+            console.log(`${currentPlayer.name} cannot get any of the remaining cards. Their turn is over.`)
+            showNotification(`${currentPlayer.name} cannot get any of the remaining cards. Their turn is over.`);
+            currentPlayer.finished_selection = true;
+        } else if (revealedCards.length === 1) {
+            console.log(`${currentPlayer.name} can only get one of the remaining cards. ${revealedCards[0].name} is added to their deck.`);
+            addCardToDeck(currentPlayer, revealedCards[0]);
+            showNotification(`${currentPlayer.name} can only get one of the remaining cards. ${revealedCards[0].name} is added to their deck.`);
+            currentPlayer.finished_selection = true;
         } else {
             updateSelectableCards(revealedCards);
             let selection = await waitForSelection();
-            if (selection === 'first'){
+            if (selection === 'first') {
                 applySelection(currentPlayer, revealedCards[0], revealedCards[1]);
-            } else if (selection === 'second'){
+            } else if (selection === 'second') {
                 applySelection(currentPlayer, revealedCards[1], revealedCards[0]);
             }
-            round = round+1;
-            currentPlayer = getOpponent(currentPlayer);
-
-            updatePlayerDecks();
-            updateBudgets();
-            updateAllCards();
-            if (round > max_rounds){
-                finished = true;
-                console.log("Selection over");
-                /* updatePhase('matches');
-                hideSelection();
-                round = 1;
-                max_rounds = Math.min(player1.deck.length, player2.deck.length);
-                updateRound(round, max_rounds);
-                updateTurn(player1);
-                playMatches(); */
-            }else{
-                updateRound(round, max_rounds);
-                updateTurn(currentPlayer);
-            }  
         }
+        // round = round+1;
+        updatePlayerDecks();
+        updateBudgets();
+        updateAllCards();
+
+        if (revealedCards.length < 2) {
+            await sleep(2000);
+        }
+        currentPlayer = switchPlayerForSelectionPhase(currentPlayer);
+        updateTurn(currentPlayer);
     }
+    console.log("Selection over");
 }
 
-async function playMatches(){
-    displayCourt();
+async function playFights() {
+    // update max rounds
+    max_rounds = Math.min(player1.deck.length, player2.deck.length);
     updateScores(player1, player2);
     let finished = false;
-    let courtCard1 = document.querySelector('#court-card-1');
-    let courtCard2 = document.querySelector('#court-card-2');
     let playButton = document.querySelector('#play-button');
-
-    while (!finished){
+    while (!finished) {
+        debugger
         updateTurn(player1);
-        let cardPlayer1 = await chooseCardForMatch(player1);
-        courtCard1.innerHTML = cardPlayer1.innerHTML;
-        courtCard1.style.display = 'block';
+        let i1 = await chooseCardForMatch(player1);
+        let card1 = player1.deck[i1];
+        updateFightArena(card1);
 
         updateTurn(player2);
-        let cardPlayer2 = await chooseCardForMatch(player2);
-        courtCard2.innerHTML = cardPlayer2.innerHTML;
-        courtCard2.style.display = 'block';
+        let i2 = await chooseCardForMatch(player2);
+        let card2 = player2.deck[i2];
+        updateFightArena(card2);
 
         let playButtonEventHandler = function() {
-            let card1 = parseInt(courtCard1.textContent.split(' ')[1]);
-            let card2 = parseInt(courtCard2.textContent.split(' ')[1]);
-
             let winner = playRound(card1, card2);
-            if (winner === 1){
+            if (winner === 1) {
                 player1.score = player1.score + 1;
                 console.log(`${player1.name} wins this match!`);
-            }else{
+            } else {
                 player2.score = player2.score + 1;
                 console.log(`${player2.name} wins this match!`);
             }
             updateScores(player1, player2);
             // hide court cards
-            courtCard1.style.display = 'none';
-            courtCard2.style.display = 'none';
-
+            clearFightArena();
             // update round
-            round = round+1;
-            if (round > max_rounds){
+            round = round + 1;
+            if (round > max_rounds) {
                 finished = true;
                 console.log("Game over");
-                if (player1.deck.length > 0){
-                    player1.score = player1.score + player1.deck.length;
-                    player1.deck = [];
-                }else if (player2.deck.length > 0){
-                    player2.score = player2.score + player2.deck.length;
-                    player2.deck = [];
-                }
-                updatePlayerDecks(player1, player2);
-                updateScores(player1, player2);
-                // hide court
-                let court = document.querySelector('#court');
-                let courtText = document.querySelector('#court-text');
-                let playButton = document.querySelector('#play-button');
-                court.style.display = 'none';
-                playButton.style.display = 'none';
-                courtText.style.display = 'none';
-
-                // display winner
-                let courtResult = document.querySelector('#court-result');
-                let winnerText = document.querySelector('#court-result #winner');
-                courtResult.style.display = 'block';
-
-                if (player1.score > player2.score){
-                    winnerText.innerHTML = `${player1.name} wins!`
-                }else if (player1.score < player2.score){
-                    winnerText.innerHTML = `${player2.name} wins!`
-                }else{
-                    winnerText.innerHTML = "It's a tie!";
-                }
-            }else{
+            } else {
                 updateRound(round, max_rounds);
             }
-
             playButton.removeEventListener('click', playButtonEventHandler);
         }
         playButton.addEventListener('click', playButtonEventHandler);
-
     }
 }
 
-function alertCardNotSelected(){
+function alertCardNotSelected() {
     let alertText = document.querySelector('#selection-alert');
     alertText.innerHTML = 'You cannot select this card. If you cannot select both cards, you must pass.';
 }
 
+let phase = 'selection';
+let round = 1;
+let max_rounds = 6;
+let budgetRatio = 0.6;
 
+let player1 = new Player('Alice', max_rounds * 10 * budgetRatio, 0);
+let player2 = new Player('Bob', max_rounds * 10 * budgetRatio, 0);
+
+let cards = generateCards();
+
+// start game
+async function playGame(){
+    updatePlayerInfo();
+    updateAllCards();
+    await chooseCards();
+    hideSelectionArena();
+    displayFightArena();
+    updatePhase('fighting');
+    await playFights();
+};
+
+playGame();

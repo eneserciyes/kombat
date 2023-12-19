@@ -8,6 +8,8 @@
     <div id="title-heading-container">
         <h1 id="title-heading">KOMBAT</h1>
     </div>      
+
+    <div id="notification"></div>
     
     <header>
         <div id="player1-info">
@@ -16,7 +18,9 @@
                 <img src="imgs/gold.png" alt="coin">
                 <p id="budget">Budget: 40</p>
             </div>
-            <p id="score" style="display: none;">Score: Score</p>
+            <div class="score" style="display: none;" >
+                <p id="score">Score: Score</p>
+            </div>
         </div>
         <div id="game-info">
             <h2 id="phase-info">Pick Your Fighters!</h2>
@@ -42,48 +46,25 @@
             </div>
         </div>
         <div id="middle-column">
-            <div id="selection-arena">
+            <div id="selection-arena" class="card-tiler-container">
                 <h2>Selection Arena</h2>
                 <div class="card-tiler-div">
-                    <div class="card-wrapper selectable silver">
-                    <div class="card" style="background-image: url('imgs/characters/subzero.png'); ">
-                        <div class="card-info">
-                            <p class="card-name">subzero</p>
-                            <p class="card-strength">8</p>
-                        </div>
-                    </div>
-                    </div>
-                    <div class="card-wrapper selectable gold">
-                    <div class="card" style="background-image: url('imgs/characters/kotal-kahn.png');">
-                        <div class="card-info">
-                            <p class="card-name">kotal kahn</p>
-                            <p class="card-strength">7</p>
-                        </div>
-                    </div>
-                    </div> 
                 </div>
-                <h3 id="court-text" style="display:none">Court</h3>
-                <div id="court" style="display:none">
-                    <div class="card" id="court-card-1" style="display:none">
-                        
-                        <p>Strength: 10</p>
-                    </div>
-                    <div class="card" id="court-card-2" style="display:none">
-                        <p>Strength: 10</p>
-                    </div>
+            </div>
+            <div id="fight-arena" class="card-tiler-container" style="display:none">
+                <h2>Fight Arena</h2>
+                <div class="card-tiler-div">
                 </div>
-                <button id="play-button" style="display:none">Play</button>
-
-                <div id="court-result" style="display:none">
-                    <h3>Result</h3>
-                    <p>Game Over!</p>
-                    <p id="winner"> {} wins!</p>
-                </div>
+                <button id="play-button">Fight</button>
+            </div>
+            <div id="result" style="display:none">
+                <h3>Result</h3>
+                <p>Game Over!</p>
+                <p id="winner"> {} wins!</p>
             </div>
             <div id="all-fighters">
                 <h2>All Fighters</h2>
                 <div class="card-tiler-div">
-                    
                 </div>
             </div>
         </div>
