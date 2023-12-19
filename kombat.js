@@ -486,15 +486,17 @@ async function playFights() {
         let card2 = null;
         if (player2.name === "Computer"){
             let candidateCards = player2.deck.filter(card => card.strength >= card1.strength); 
-            let idx = null
             if (candidateCards.length > 0){
-                idx = Math.floor(Math.random() * candidateCards.length);
+                let idx = Math.floor(Math.random() * candidateCards.length);
                 card2 = candidateCards[idx];
             }else{
-                idx = Math.floor(Math.random() * player2.deck.length);
+                let idx = Math.floor(Math.random() * player2.deck.length);
                 card2 = player2.deck[idx];
             }
-            player2.deck.splice(idx, 1); 
+            let idx = player2.deck.indexOf(card2);
+            if (idx > -1){
+                player2.deck.splice(idx, 1); 
+            }
             await sleep(2000);
             updatePlayerDecks(selectable = true);
         }else{
