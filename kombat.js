@@ -160,7 +160,7 @@ function updateScores() {
 
 function updateRound() {
     let roundInfo = document.querySelector('#round-info');
-    roundInfo.innerHTML = `Round #${round}/${MAX_ROUNDS}`;
+    roundInfo.innerHTML = `Round ${round}/${MAX_ROUNDS}`;
 }
 
 function updateTurn(currentPlayer) {
@@ -428,7 +428,6 @@ async function chooseCards() {
     let currentPlayer = player1;
     updateTurn(currentPlayer);
     updateBudgets();
-    updateRound();
     while (!player1.finished_selection || !player2.finished_selection) {
         let revealedCards = revealCards(currentPlayer);
         if (revealedCards.length === 0) {
@@ -449,7 +448,6 @@ async function chooseCards() {
                 applySelection(currentPlayer, revealedCards[1], revealedCards[0]);
             }
         }
-        // round = round+1;
         updatePlayerDecks();
         updateBudgets();
         updateAllCards();
@@ -465,7 +463,6 @@ async function chooseCards() {
 
 async function playFights() {
     // update max rounds
-    MAX_ROUNDS = Math.min(player1.deck.length, player2.deck.length);
     updateScores(player1, player2);
     let finished = false;
     while (!finished) {
@@ -538,11 +535,19 @@ async function playGame(player1Name, player2Name, budgetRatio, maxRounds) {
     updatePhase('selection');
     updatePlayerInfo();
     updateAllCards();
+
     await chooseCards();
+
     hideSelectionArena();
     displayFightArena();
+    
     updatePhase('fighting');
+    MAX_ROUNDS = Math.min(player1.deck.length, player2.deck.length);
+    updateRound();
+
     await playFights();
+
     await resolveCardsRemainingInTheDecks();
+
     displayWinner();
 };
