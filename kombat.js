@@ -146,16 +146,16 @@ function clearFightArena() {
 }
 
 function updateBudgets() {
-    let player1Budget = document.querySelector('#player1-info #budget');
-    let player2Budget = document.querySelector('#player2-info #budget');
+    let player1Budget = document.querySelector('#player1-info .budget-container #budget');
+    let player2Budget = document.querySelector('#player2-info .budget-container #budget');
 
     player1Budget.innerHTML = 'Budget: ' + player1.budget;
     player2Budget.innerHTML = 'Budget: ' + player2.budget;
 }
 
 function updateScores() {
-    let player1Score = document.querySelector('#player1-info #score');
-    let player2Score = document.querySelector('#player2-info #score');
+    let player1Score = document.querySelector('#player1-info .score-container #score');
+    let player2Score = document.querySelector('#player2-info .score-container #score');
 
     player1Score.innerHTML = 'Score: ' + player1.score;
     player2Score.innerHTML = 'Score: ' + player2.score;
@@ -183,7 +183,7 @@ function updatePhase(phase) {
 function hideSelectionArena() {
     let selectionArena = document.querySelector('#selection-arena');
     let allFighters = document.querySelector('#all-fighters');
-    let budgets = document.querySelectorAll('.budget');
+    let budgets = document.querySelectorAll('.budget-container');
     selectionArena.style.display = 'none';
     allFighters.style.display = 'none';
     budgets.forEach(budget => {
@@ -193,7 +193,7 @@ function hideSelectionArena() {
 
 function displayFightArena() {
     let fightArena = document.querySelector('#fight-arena');
-    let scores = document.querySelectorAll('#score');
+    let scores = document.querySelectorAll('.score-container');
     fightArena.style.display = 'flex';
     scores.forEach(score => {
         score.style.display = 'flex';

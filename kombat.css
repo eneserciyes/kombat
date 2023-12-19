@@ -149,12 +149,12 @@ header p {
     padding-right: 1rem;
 }
 
-.budget, .score{
+.budget-container, .score-container{
     display: flex;
     align-items: center;
     height: 20%;
 }
-.budget img{
+.budget-container img{
     margin-right: 0.2rem;
     height: 50%;
 }
