@@ -262,7 +262,7 @@ function displayGame() {
         sliderMaxRoundsValue.innerHTML = sliderMaxRounds.value;
     }
     selectMode.onchange = function() {
-        if (selectMode.value === "Human vs Human"){
+        if (selectMode.value === "Human vs Human") {
             player2Name.style.display = 'flex';
         } else {
             player2Name.style.display = 'none';
@@ -272,7 +272,7 @@ function displayGame() {
     startButton.onclick = function() {
         let player1NameInput = player1Name.querySelector('input').value;
         let player2NameInput = player2Name.querySelector('input').value;
-    
+
         let sliderBudgetRatioValue = sliderBudgetRatio.value / 10;
         let sliderMaxRoundsValue = sliderMaxRounds.value;
 
@@ -518,23 +518,22 @@ async function resolveCardsRemainingInTheDecks() {
 
 let phase = '';
 let round = 1;
-let MAX_ROUNDS = 6;
-let BUDGET_RATIO = 0.6;
+let MAX_ROUNDS = null;
+let BUDGET_RATIO = null;
 
-let player1 = new Player('Alice', MAX_ROUNDS * 10 * BUDGET_RATIO, 0);
-let player2 = new Player('Bob', MAX_ROUNDS * 10 * BUDGET_RATIO, 0);
+let player1 = null//new Player('Alice', MAX_ROUNDS * 10 * BUDGET_RATIO, 0);
+let player2 = null//new Player('Bob', MAX_ROUNDS * 10 * BUDGET_RATIO, 0);
 
-let cards = generateCards();
+let cards = null;
 
 // start game
 async function playGame(player1Name, player2Name, budgetRatio, maxRounds) {
     // initialize game
-    player1.name = player1Name;
-    player2.name = player2Name;
-    player1.budget = maxRounds * 10 * budgetRatio;
-    player2.budget = maxRounds * 10 * budgetRatio;
+    player1 = new Player(player1Name, maxRounds * 10 * budgetRatio, 0);
+    player2 = new Player(player2Name, maxRounds * 10 * budgetRatio, 0);
     MAX_ROUNDS = maxRounds;
     BUDGET_RATIO = budgetRatio;
+    cards = generateCards();
 
     updatePhase('selection');
     updatePlayerInfo();
