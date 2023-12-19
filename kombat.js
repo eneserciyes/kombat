@@ -236,14 +236,23 @@ function showNotification(message) {
 {
     let sliderBudgetRatio = document.querySelector('#budget-ratio-picker-item input');
     let sliderMaxRounds = document.querySelector('#max-rounds-picker-item input');
+    let selectMode = document.querySelector('#play-mode-picker-item select');
     let sliderBudgetRatioValue = document.querySelector('#budget-ratio-picker-item .setting-picker-item-input-value');
     let sliderMaxRoundsValue = document.querySelector('#max-rounds-picker-item .setting-picker-item-input-value');
+    let player2Name = document.querySelector('#player2-name-picker-item');
 
     sliderBudgetRatio.onchange = function() {
         sliderBudgetRatioValue.innerHTML = sliderBudgetRatio.value / 10;
     }
     sliderMaxRounds.onchange = function() {
         sliderMaxRoundsValue.innerHTML = sliderMaxRounds.value;
+    }
+    selectMode.onchange = function() {
+        if (selectMode.value === "Human vs Human"){
+            player2Name.style.display = 'flex';
+        } else {
+            player2Name.style.display = 'none';
+        }
     }
 
 }
